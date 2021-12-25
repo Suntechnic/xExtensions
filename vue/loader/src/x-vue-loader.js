@@ -1,3 +1,4 @@
+'use strict'
 BX.ready(function(){
     
     // функция инициализации
@@ -26,6 +27,6 @@ BX.ready(function(){
     
     // поддержка композита
     if (window.frameCacheVars !== undefined) {
-        BX.addCustomEvent("onFrameDataReceived" , initVue);
+        BX.addCustomEvent('onFrameDataReceived' , initVue);
     }
 });

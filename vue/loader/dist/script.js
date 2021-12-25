@@ -27,7 +27,7 @@ this.BX = this.BX || {};
       initVue(); // поддержка композита
 
       if (window.frameCacheVars !== undefined) {
-        BX.addCustomEvent("onFrameDataReceived", initVue);
+        BX.addCustomEvent('onFrameDataReceived', initVue);
       }
     });
 

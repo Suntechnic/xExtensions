@@ -9,7 +9,7 @@ return [
         '/local/js/x/vue/loader/dist/script.js',
     ],
     'rel' => [
-		'main.polyfill.core',
+		'ui.vue',
 	],
     'skip_core' => true,
 ];
