@@ -11,5 +11,5 @@ return [
     'rel' => [
 		'ui.vue',
 	],
-    'skip_core' => true,
+    'skip_core' => false,
 ];
