@@ -6,10 +6,11 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
 
 return [
     'js' =>[
-        '/local/js/x/vue/loader/dist/script.js',
+        'dist/script.js',
     ],
     'rel' => [
 		'ui.vue',
+        //'main.polyfill.core',
 	],
     'skip_core' => false,
 ];
