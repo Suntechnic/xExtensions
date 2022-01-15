@@ -1,5 +1,5 @@
 module.exports = {
 	input: 'src/x-vue-loader.js',
-	output: 'dist/script.js',
+	output: 'dist/s.js',
 	namespace: 'BX.'
 };
