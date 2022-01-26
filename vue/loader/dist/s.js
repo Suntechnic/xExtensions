@@ -4,8 +4,10 @@ this.BX = this.BX || {};
 
     BX.ready(function () {
       // функция инициализации
-      var initVue = function initVue() {
-        document.querySelectorAll('[vue]').forEach(function (elm) {
+      var initVue = function initVue(node) {
+        console.log('initVue', node);
+        node = node || document;
+        node.querySelectorAll('[vue]').forEach(function (elm) {
           var _APP, _APP$config;
 
           var datasetAttrs = '';
@@ -24,7 +26,10 @@ this.BX = this.BX || {};
       }; // инициализация компонентов
 
 
-      initVue(); // поддержка композита
+      initVue(); // внутреннее событие перестройки DOM
+
+      BX.addCustomEvent('x.vue.loader:initVue', initVue); //BX.onCustomEvent('x.vue.loader:initVue');
+      // поддержка композита
 
       if (window.frameCacheVars !== undefined) {
         BX.addCustomEvent('onFrameDataReceived', initVue);
