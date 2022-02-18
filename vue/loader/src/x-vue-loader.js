@@ -3,9 +3,9 @@ BX.ready(function(){
     // функция инициализации
     let initVue = (node) => {
             console.log('initVue', node);
+            
             node = node || document
             node.querySelectorAll('[vue]').forEach((elm) => {
-            
                     let datasetAttrs = '';
                     for (let name in elm.dataset) {
                         datasetAttrs = datasetAttrs+' '+name+'="'+elm.dataset[name]+'"';
