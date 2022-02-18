@@ -17,7 +17,7 @@ this.BX = this.BX || {};
           }
 
           var template = '<' + elm.getAttribute('vue') + datasetAttrs + '/>';
-          if (((_APP = APP) === null || _APP === void 0 ? void 0 : (_APP$config = _APP.config) === null || _APP$config === void 0 ? void 0 : _APP$config.debug) > 2) console.log('load vue component', elm.getAttribute('vue'), elm.dataset);
+          if ((typeof APP === "undefined" ? "undefined" : babelHelpers.typeof(APP)) == 'object' && ((_APP = APP) === null || _APP === void 0 ? void 0 : (_APP$config = _APP.config) === null || _APP$config === void 0 ? void 0 : _APP$config.debug) > 2) console.log('load vue component', elm.getAttribute('vue'), elm.dataset);
           BX.BitrixVue.createApp({
             el: elm,
             template: template

@@ -12,7 +12,7 @@ BX.ready(function(){
                     }
                     let template = '<'+elm.getAttribute('vue')+datasetAttrs+'/>';
                     
-                    if (APP?.config?.debug > 2) console.log(
+                    if (typeof APP == 'object' && (APP?.config?.debug > 2)) console.log(
                             'load vue component',
                             elm.getAttribute('vue'),
                             elm.dataset
