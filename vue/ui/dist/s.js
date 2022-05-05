@@ -1,10 +1,11 @@
 this.BX = this.BX || {};
+this.BX.X = this.BX.X || {};
 (function (exports,ui_vue) {
 	'use strict';
 
 	var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 	function unwrapExports(x) {
-	  return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x.default : x;
+	  return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x["default"] : x;
 	}
 	function createCommonjsModule(fn, module) {
 	  return module = {
@@ -14,7 +15,7 @@ this.BX = this.BX || {};
 
 	var vueSelect = createCommonjsModule(function (module, exports) {
 	!function (t, e) {
-	  "object" == (babelHelpers.typeof(exports)) && "object" == (babelHelpers.typeof(module)) ? module.exports = e() : "object" == (babelHelpers.typeof(exports)) ? exports.VueSelect = e() : t.VueSelect = e();
+	  "object" == (babelHelpers["typeof"](exports)) && "object" == (babelHelpers["typeof"](module)) ? module.exports = e() : "object" == (babelHelpers["typeof"](exports)) ? exports.VueSelect = e() : t.VueSelect = e();
 	}("undefined" != typeof self ? self : commonjsGlobal, function () {
 	  return function (t) {
 	    var e = {};
@@ -42,7 +43,7 @@ this.BX = this.BX || {};
 	      });
 	    }, n.t = function (t, e) {
 	      if (1 & e && (t = n(t)), 8 & e) return t;
-	      if (4 & e && "object" == babelHelpers.typeof(t) && t && t.__esModule) return t;
+	      if (4 & e && "object" == babelHelpers["typeof"](t) && t && t.__esModule) return t;
 	      var o = Object.create(null);
 	      if (n.r(o), Object.defineProperty(o, "default", {
 	        enumerable: !0,
@@ -55,7 +56,7 @@ this.BX = this.BX || {};
 	      return o;
 	    }, n.n = function (t) {
 	      var e = t && t.__esModule ? function () {
-	        return t.default;
+	        return t["default"];
 	      } : function () {
 	        return t;
 	      };
@@ -73,10 +74,10 @@ this.BX = this.BX || {};
 	    };
 	  }, function (t, e) {
 	    function n(e) {
-	      return "function" == typeof Symbol && "symbol" == babelHelpers.typeof(Symbol.iterator) ? t.exports = n = function n(t) {
-	        return babelHelpers.typeof(t);
+	      return "function" == typeof Symbol && "symbol" == babelHelpers["typeof"](Symbol.iterator) ? t.exports = n = function n(t) {
+	        return babelHelpers["typeof"](t);
 	      } : t.exports = n = function n(t) {
-	        return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : babelHelpers.typeof(t);
+	        return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : babelHelpers["typeof"](t);
 	      }, n(e);
 	    }
 
@@ -125,7 +126,7 @@ this.BX = this.BX || {};
 	      props: {
 	        autoscroll: {
 	          type: Boolean,
-	          default: !0
+	          "default": !0
 	        }
 	      },
 	      watch: {
@@ -206,7 +207,7 @@ this.BX = this.BX || {};
 	      props: {
 	        loading: {
 	          type: Boolean,
-	          default: !1
+	          "default": !1
 	        }
 	      },
 	      data: function data() {
@@ -358,81 +359,81 @@ this.BX = this.BX || {};
 	        value: {},
 	        components: {
 	          type: Object,
-	          default: function _default() {
+	          "default": function _default() {
 	            return {};
 	          }
 	        },
 	        options: {
 	          type: Array,
-	          default: function _default() {
+	          "default": function _default() {
 	            return [];
 	          }
 	        },
 	        disabled: {
 	          type: Boolean,
-	          default: !1
+	          "default": !1
 	        },
 	        clearable: {
 	          type: Boolean,
-	          default: !0
+	          "default": !0
 	        },
 	        deselectFromDropdown: {
 	          type: Boolean,
-	          default: !1
+	          "default": !1
 	        },
 	        searchable: {
 	          type: Boolean,
-	          default: !0
+	          "default": !0
 	        },
 	        multiple: {
 	          type: Boolean,
-	          default: !1
+	          "default": !1
 	        },
 	        placeholder: {
 	          type: String,
-	          default: ""
+	          "default": ""
 	        },
 	        transition: {
 	          type: String,
-	          default: "vs__fade"
+	          "default": "vs__fade"
 	        },
 	        clearSearchOnSelect: {
 	          type: Boolean,
-	          default: !0
+	          "default": !0
 	        },
 	        closeOnSelect: {
 	          type: Boolean,
-	          default: !0
+	          "default": !0
 	        },
 	        label: {
 	          type: String,
-	          default: "label"
+	          "default": "label"
 	        },
 	        autocomplete: {
 	          type: String,
-	          default: "off"
+	          "default": "off"
 	        },
 	        reduce: {
 	          type: Function,
-	          default: function _default(t) {
+	          "default": function _default(t) {
 	            return t;
 	          }
 	        },
 	        selectable: {
 	          type: Function,
-	          default: function _default(t) {
+	          "default": function _default(t) {
 	            return !0;
 	          }
 	        },
 	        getOptionLabel: {
 	          type: Function,
-	          default: function _default(t) {
+	          "default": function _default(t) {
 	            return "object" === s()(t) ? t.hasOwnProperty(this.label) ? t[this.label] : console.warn('[vue-select warn]: Label key "option.'.concat(this.label, '" does not') + " exist in options object ".concat(JSON.stringify(t), ".\n") + "https://vue-select.org/api/props.html#getoptionlabel") : t;
 	          }
 	        },
 	        getOptionKey: {
 	          type: Function,
-	          default: function _default(t) {
+	          "default": function _default(t) {
 	            if ("object" !== s()(t)) return t;
 
 	            try {
@@ -444,35 +445,35 @@ this.BX = this.BX || {};
 	        },
 	        onTab: {
 	          type: Function,
-	          default: function _default() {
+	          "default": function _default() {
 	            this.selectOnTab && !this.isComposing && this.typeAheadSelect();
 	          }
 	        },
 	        taggable: {
 	          type: Boolean,
-	          default: !1
+	          "default": !1
 	        },
 	        tabindex: {
 	          type: Number,
-	          default: null
+	          "default": null
 	        },
 	        pushTags: {
 	          type: Boolean,
-	          default: !1
+	          "default": !1
 	        },
 	        filterable: {
 	          type: Boolean,
-	          default: !0
+	          "default": !0
 	        },
 	        filterBy: {
 	          type: Function,
-	          default: function _default(t, e, n) {
+	          "default": function _default(t, e, n) {
 	            return (e || "").toLocaleLowerCase().indexOf(n.toLocaleLowerCase()) > -1;
 	          }
 	        },
 	        filter: {
 	          type: Function,
-	          default: function _default(t, e) {
+	          "default": function _default(t, e) {
 	            var n = this;
 	            return t.filter(function (t) {
 	              var o = n.getOptionLabel(t);
@@ -482,19 +483,19 @@ this.BX = this.BX || {};
 	        },
 	        createOption: {
 	          type: Function,
-	          default: function _default(t) {
+	          "default": function _default(t) {
 	            return "object" === s()(this.optionList[0]) ? l()({}, this.label, t) : t;
 	          }
 	        },
 	        resetOnOptionsChange: {
-	          default: !1,
+	          "default": !1,
 	          validator: function validator(t) {
 	            return ["function", "boolean"].includes(s()(t));
 	          }
 	        },
 	        clearSearchOnBlur: {
 	          type: Function,
-	          default: function _default(t) {
+	          "default": function _default(t) {
 	            var e = t.clearSearchOnSelect,
 	                n = t.multiple;
 	            return e && !n;
@@ -502,42 +503,42 @@ this.BX = this.BX || {};
 	        },
 	        noDrop: {
 	          type: Boolean,
-	          default: !1
+	          "default": !1
 	        },
 	        inputId: {
 	          type: String
 	        },
 	        dir: {
 	          type: String,
-	          default: "auto"
+	          "default": "auto"
 	        },
 	        selectOnTab: {
 	          type: Boolean,
-	          default: !1
+	          "default": !1
 	        },
 	        selectOnKeyCodes: {
 	          type: Array,
-	          default: function _default() {
+	          "default": function _default() {
 	            return [13];
 	          }
 	        },
 	        searchInputQuerySelector: {
 	          type: String,
-	          default: "[type=search]"
+	          "default": "[type=search]"
 	        },
 	        mapKeydown: {
 	          type: Function,
-	          default: function _default(t, e) {
+	          "default": function _default(t, e) {
 	            return t;
 	          }
 	        },
 	        appendToBody: {
 	          type: Boolean,
-	          default: !1
+	          "default": !1
 	        },
 	        calculatePosition: {
 	          type: Function,
-	          default: function _default(t, e, n) {
+	          "default": function _default(t, e, n) {
 	            var o = n.width,
 	                i = n.top,
 	                r = n.left;
@@ -546,7 +547,7 @@ this.BX = this.BX || {};
 	        },
 	        dropdownShouldOpen: {
 	          type: Function,
-	          default: function _default(t) {
+	          "default": function _default(t) {
 	            var e = t.noDrop,
 	                n = t.open,
 	                o = t.mutableLoading;
@@ -555,7 +556,7 @@ this.BX = this.BX || {};
 	        },
 	        uid: {
 	          type: [String, Number],
-	          default: function _default() {
+	          "default": function _default() {
 	            return g();
 	          }
 	        }
@@ -636,7 +637,7 @@ this.BX = this.BX || {};
 	              attributes: {
 	                ref: "openIndicator",
 	                role: "presentation",
-	                class: "vs__open-indicator"
+	                "class": "vs__open-indicator"
 	              }
 	            },
 	            listHeader: e,
@@ -852,7 +853,7 @@ this.BX = this.BX || {};
 	          n = t._self._c || e;
 	      return n("div", {
 	        staticClass: "v-select",
-	        class: t.stateClasses,
+	        "class": t.stateClasses,
 	        attrs: {
 	          dir: t.dir
 	        }
@@ -963,7 +964,7 @@ this.BX = this.BX || {};
 	        return n("li", {
 	          key: t.getOptionKey(e),
 	          staticClass: "vs__dropdown-option",
-	          class: {
+	          "class": {
 	            "vs__dropdown-option--deselect": t.isOptionDeselectable(e) && o === t.typeAheadPointer,
 	            "vs__dropdown-option--selected": t.isOptionSelected(e),
 	            "vs__dropdown-option--highlight": o === t.typeAheadPointer,
@@ -1006,7 +1007,7 @@ this.BX = this.BX || {};
 	    }), n.d(e, "mixins", function () {
 	      return w;
 	    });
-	    e.default = O;
+	    e["default"] = O;
 	  }]);
 	});
 	});
@@ -1016,5 +1017,5 @@ this.BX = this.BX || {};
 
 	ui_vue.Vue.component('v-select', vSelect);
 
-}((this.BX[''] = this.BX[''] || {}),BX));
+}((this.BX.X.Extensions = this.BX.X.Extensions || {}),BX));
 //# sourceMappingURL=s.js.map
