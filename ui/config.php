@@ -11,5 +11,8 @@ return [
     'js' =>[
         'dist/s.js',
     ],
+    'rel' => [
+		'main.core',
+	],
     'skip_core' => true,
 ];
