@@ -12,7 +12,7 @@ return [
         'dist/s.js',
     ],
     'rel' => [
-		'main.core',
+		'main.polyfill.core',
 	],
     'skip_core' => true,
 ];

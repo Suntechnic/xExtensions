@@ -35,6 +35,19 @@ Huge thanks to the [sponsors](https://github.com/sponsors/sagalbot) and [contrib
 
 ## Install
 
+> Vue 3 support is on the `beta` channel: `vue-select@beta`, and will become the new default when `v4` is released. See [#1579](https://github.com/sagalbot/vue-select/issues/1597) for more details!
+
+
+**Vue 3 / Vue Select 4.x-beta**
+```bash
+yarn add vue-select@beta
+
+# or use npm
+
+npm install vue-select@beta
+```
+
+**Vue 2 / Vue Select 3.x**
 ```bash
 yarn add vue-select
 
@@ -56,12 +69,6 @@ The component itself does not include any CSS. You'll need to include it separat
 
 ```js
 import "vue-select/dist/vue-select.css";
-```
-
-Alternatively, you can import the scss for complete control of the component styles:
-
-```scss
-@import "vue-select/src/scss/vue-select.scss";
 ```
 
 You can also include vue-select directly in the browser. Check out the
