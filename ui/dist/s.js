@@ -1,5 +1,4 @@
 this.BX = this.BX || {};
-this.BX.X = this.BX.X || {};
 (function (exports) {
 	'use strict';
 
@@ -1227,5 +1226,5 @@ this.BX.X = this.BX.X || {};
 
 	exports.iziToast = iziToast;
 
-}((this.BX.X.Extensions = this.BX.X.Extensions || {})));
+}((this.BX.X = this.BX.X || {})));
 //# sourceMappingURL=s.js.map
