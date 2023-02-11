@@ -8,5 +8,9 @@ return [
     'js' =>[
         'dist/s.js',
     ],
+	'rel' => [
+		'main.polyfill.core',
+		'ui.vue3',
+	],
     'skip_core' => true,
 ];

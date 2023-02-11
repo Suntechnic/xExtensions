@@ -45,65 +45,90 @@ this.BX.X = this.BX.X || {};
 
     * 
     */
+
     // функция инициализации
+    var loader = {
+      componentstores: [],
+      addComponentStore: function addComponentStore(store) {
+        loader.componentstores.push(store);
+      },
+      init: function init(node) {
+        var _this = this;
+        //console.log('initVue', node);
 
-    var init = function init(node) {
-      //console.log('initVue', node);
-      node = node || document;
-      node.querySelectorAll('[vue]').forEach(function (elm) {
-        var ComponentName = elm.getAttribute('vue');
-        var AppName = 'App' + ComponentName;
-        if (typeof BX.X.Vue.Apps == 'undefined') BX.X.Vue.Apps = {};
-        if (typeof BX.X.Vue.Apps[AppName] == 'undefined') BX.X.Vue.Apps[AppName] = [];
+        node = node || document;
+        node.querySelectorAll('[vue]').forEach(function (elm) {
+          var ComponentName = elm.getAttribute('vue');
+          var AppName = 'App' + ComponentName;
+          if (typeof BX.X.Vue.Apps == 'undefined') BX.X.Vue.Apps = {};
+          if (typeof BX.X.Vue.Apps[AppName] == 'undefined') BX.X.Vue.Apps[AppName] = [];
 
-        if (BX.X.Vue.Components[ComponentName]) {
-          var datasetAttrs = '';
-
-          for (var name in elm.dataset) {
-            datasetAttrs = datasetAttrs + ' ' + name + '="' + elm.dataset[name] + '"';
+          // поиск компонента
+          var component = false;
+          for (var i in loader.componentstores) {
+            var componentstore = _this.componentstores[i];
+            if (babelHelpers["typeof"](componentstore[ComponentName]) == 'object') {
+              component = componentstore[ComponentName];
+              break;
+            }
+          }
+          if (!component) {
+            // если компонента нет - возможно это собственный компонент
+            component = BX.X.Vue.Components[ComponentName];
           }
 
-          var template = '<' + ComponentName + datasetAttrs + '/>';
-          var components = {};
-          components[ComponentName] = BX.X.Vue.Components[ComponentName];
-          var application = BX.Vue3.BitrixVue.createApp({
-            name: AppName,
-            components: components,
-            template: template
-          }); //application.use(store);
-          // предоставляем данные json
+          // если компонент нашли
+          if (component) {
+            var datasetAttrs = '';
+            for (var name in elm.dataset) {
+              datasetAttrs = datasetAttrs + ' ' + name + '="' + elm.dataset[name] + '"';
+            }
+            var template = '<' + ComponentName + datasetAttrs + '/>';
+            var components = {};
+            components[ComponentName] = component;
+            var application = ui_vue3.BitrixVue.createApp({
+              name: AppName,
+              components: components,
+              template: template
+            });
 
-          var jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
-          jsonElms.forEach(function (jsonElm) {
-            application.provide(jsonElm.getAttribute('name'), JSON.parse(jsonElm.innerText));
-          }); // предоставляем данные о приложении
+            //application.use(store);
 
-          application.provide('root', {
-            'application': application,
-            'name': AppName,
-            'index': BX.X.Vue.Apps[AppName].length
-          }); // удаляем для избежания повторного монтирования
+            // предоставляем данные json
+            var jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
+            jsonElms.forEach(function (jsonElm) {
+              application.provide(jsonElm.getAttribute('name'), JSON.parse(jsonElm.innerText));
+            });
 
-          elm.removeAttribute('vue');
+            // предоставляем данные о приложении
+            application.provide('root', {
+              'application': application,
+              'name': AppName,
+              'index': BX.X.Vue.Apps[AppName].length
+            });
 
-          if (!elm.getAttribute('vue')) {
-            application.mount(elm);
-            BX.X.Vue.Apps[AppName].push(application);
-          } else {
-            console.error('ERROR premounted!');
-          }
-        } else console.error('Component ' + ComponentName + ' not exists');
-      });
-    }; // внутреннее событие перестройки DOM
+            // удаляем для избежания повторного монтирования
+            elm.removeAttribute('vue');
+            if (!elm.getAttribute('vue')) {
+              application.mount(elm);
+              BX.X.Vue.Apps[AppName].push(application);
+            } else {
+              console.error('ERROR premounted!');
+            }
+          } else console.error('Component ' + ComponentName + ' not exists');
+        });
+      }
+    };
 
-    BX.addCustomEvent('x.vue.loader:initVue', init); //BX.onCustomEvent('x.vue.loader:initVue');
+    // внутреннее событие перестройки DOM
+    BX.addCustomEvent('x.vue.loader:initVue', loader.init); //BX.onCustomEvent('x.vue.loader:initVue');
+
     // поддержка композита
-
     if (window.frameCacheVars !== undefined) {
-      BX.addCustomEvent('onFrameDataReceived', init);
+      BX.addCustomEvent('onFrameDataReceived', loader.init);
     }
 
-    exports.init = init;
+    exports.loader = loader;
 
 }((this.BX.X.Vue = this.BX.X.Vue || {}),BX.Vue3));
 //# sourceMappingURL=s.js.map
