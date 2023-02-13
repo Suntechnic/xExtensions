@@ -72,7 +72,7 @@ export const loader = {
                         break;
                     }
                 }
-                if (!component) { // если компонента нет - возможно это собственный компонент
+                if (!component && BX.X.Vue.Components) { // если компонента нет - возможно это собственный компонент
                     component = BX.X.Vue.Components[ComponentName];
                 }
                 

@@ -72,7 +72,7 @@ this.BX.X = this.BX.X || {};
               break;
             }
           }
-          if (!component) {
+          if (!component && BX.X.Vue.Components) {
             // если компонента нет - возможно это собственный компонент
             component = BX.X.Vue.Components[ComponentName];
           }

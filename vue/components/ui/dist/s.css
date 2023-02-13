@@ -1,0 +1,51 @@
+.selector {
+    display:inline-block;
+    position: relative
+}
+.selector .selector-display {
+    width: 100%;
+    position: relative;
+    padding: 2px;
+    border: solid 1px;
+    border-radius: 2px;
+}
+.selector .selector-list {
+    position: absolute;
+    padding: 2px;
+    border: solid 1px;
+    background-color: #fff;
+    z-index: 100000;
+}
+
+.selector .selector-unselect {
+    cursor: pointer;
+}
+
+.selector .selector-list ul {
+    max-height: 260px;
+    overflow-y: scroll;
+}
+.selector .selector-list li {
+    cursor: pointer;
+    -webkit-transition-property: background-color, color, opacity;
+    -o-transition-property: background-color, color, opacity;
+    transition-property: background-color, color, opacity;
+    -webkit-transition-duration: 0.4s;
+         -o-transition-duration: 0.4s;
+            transition-duration: 0.4s;
+}
+.selector .selector-list li.active {
+    background-color: #fcc;
+    cursor: default;
+}
+.selector .selector-list li:not(.active):hover {
+    background-color: #ccc;
+}
+
+.selector .selector-list .selector-list-item_others {
+    color: #222;
+}
+.selector .selector-list .selector-list-item_rest {
+    color: #222;
+    opacity: 0.4;
+}
