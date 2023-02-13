@@ -1,6 +1,6 @@
 .selector {
     display:inline-block;
-    position: relative
+    position: relative;
 }
 .selector .selector-display {
     width: 100%;

@@ -99,9 +99,9 @@ export const Selector = {
     <div class="selector">
         <input
                 v-if="name"
-                type="hidden
                 v-bind:name="name"
                 v-bind:value="valueModel"
+                type="hidden"
             >
         <div class="selector-display" v-on:click="toggle">{{title}}</div>
         <div class="selector-list" v-if="state.open">
