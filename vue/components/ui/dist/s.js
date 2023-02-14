@@ -11,7 +11,10 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         options: {},
         valuekey: {},
         titlekey: {},
-        name: {}
+        name: {},
+        placeholder: {
+          "default": ''
+        }
       },
       data: function data() {
         return {
@@ -49,7 +52,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         },
         title: function title() {
           if (this.option) return this.option.title;
-          return ' ';
+          return this.placeholder;
         },
         orderedOptions: function orderedOptions() {
           var ordered = [[], [], []];

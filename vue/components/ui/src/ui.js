@@ -9,6 +9,7 @@ export const Selector = {
         valuekey: {},
         titlekey: {},
         name: {},
+        placeholder: {default: ''}
     },
     data ()
 	{
@@ -47,7 +48,7 @@ export const Selector = {
         },
         title () {
             if (this.option) return this.option.title;
-            return ' ';
+            return this.placeholder;
         },
         orderedOptions () {
             let ordered = [
