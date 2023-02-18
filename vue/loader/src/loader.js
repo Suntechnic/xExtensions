@@ -52,7 +52,7 @@ export const loader = {
     },
     
     init (node)  {
-        //console.log('initVue', node);
+        console.log('initVue', node);
         
         node = node || document
         node.querySelectorAll('[vue]').forEach((elm) => {

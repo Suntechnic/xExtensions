@@ -54,8 +54,7 @@ this.BX.X = this.BX.X || {};
       },
       init: function init(node) {
         var _this = this;
-        //console.log('initVue', node);
-
+        console.log('initVue', node);
         node = node || document;
         node.querySelectorAll('[vue]').forEach(function (elm) {
           var ComponentName = elm.getAttribute('vue');

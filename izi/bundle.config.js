@@ -1,5 +1,5 @@
 module.exports = {
-	input: 'src/ui.js',
+	input: 'src/izi.js',
 	output: 'dist/s.js',
 	namespace: 'BX.X',
 	plugins: {
