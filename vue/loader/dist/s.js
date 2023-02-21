@@ -84,6 +84,8 @@ this.BX.X = this.BX.X || {};
       BX.addCustomEvent('onFrameDataReceived', loader.init);
     }
 
+    // GO
+
     exports.loader = loader;
 
 }((this.BX.X.Vue = this.BX.X.Vue || {}),BX.Vue3));

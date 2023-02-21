@@ -1,5 +1,5 @@
 // экстеншены которые должны быть на всех страницах
-import {init as initVue} from 'x.vue.loader';
+import {loader as loaderVue} from 'x.vue.loader';
 
 export const Core = {
     
@@ -7,7 +7,7 @@ export const Core = {
 
 window.addEventListener('load', ()=>{
     BX.ready(() => {
-            initVue();
+            loaderVue.init();
         });
 });
 

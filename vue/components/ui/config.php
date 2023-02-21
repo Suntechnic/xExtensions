@@ -9,7 +9,9 @@ return [
 	'js' => 'dist/s.js',
 	'rel' => [
 		'main.polyfill.core',
+		'x.core',
 		'x.vue.mixins',
 	],
 	'skip_core' => true,
 ];
+

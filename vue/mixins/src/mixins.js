@@ -49,3 +49,25 @@ export const Input = {
         }
 	}
 }
+
+// миксин для поля ввода треующего контроля за содержимым
+export const InputContented = {
+    data ()
+	{
+		return {
+			state: {
+				focused: false
+			}
+		}
+	},
+	computed: {
+		hasValue ()
+		{
+			return !!this.valueModel;
+		},
+		hasContented ()
+		{
+			return this.hasValue || this.state.focused;
+		},
+	},
+}

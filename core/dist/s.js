@@ -6,7 +6,7 @@ this.BX = this.BX || {};
     var Core = {};
     window.addEventListener('load', function () {
       BX.ready(function () {
-        x_vue_loader.init();
+        x_vue_loader.loader.init();
       });
     });
 
