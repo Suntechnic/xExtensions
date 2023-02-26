@@ -2,11 +2,13 @@ this.BX = this.BX || {};
 (function (exports,x_vue_loader) {
     'use strict';
 
-    // экстеншены которые должны быть на всех страницах
     var Core = {};
+    console.time('realoader');
     window.addEventListener('load', function () {
       BX.ready(function () {
+        console.timeEnd('realoader');
         x_vue_loader.loader.init();
+        BX.onCustomEvent('x.core:loaded');
       });
     });
 
