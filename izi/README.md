@@ -1,4 +1,4 @@
-https://izitoast.marcelodolza.com/
+[IZITOAST](https://izitoast.marcelodolza.com/)
 
 ```js
 BX.X.iziToast.show({
