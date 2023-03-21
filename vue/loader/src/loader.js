@@ -3,9 +3,14 @@ import {BitrixVue} from 'ui.vue3';
 // функция инициализации
 export const loader = {
     componentstores: [],
+    store: false,
     
     addComponentStore (store)  {
-        loader.componentstores.push(store);
+        this.componentstores.push(store);
+    },
+    
+    addStore (store)  {
+        this.store = store;
     },
     
     init (node)  {
@@ -22,14 +27,23 @@ export const loader = {
                 
                 // поиск компонента
                 let component = false;
-                for (let i in loader.componentstores) {
+                for (let i in this.componentstores) {
                     let componentstore = this.componentstores[i];
                     if (typeof componentstore[ComponentName] == 'object') {
                         component = componentstore[ComponentName];
                         break;
                     }
                 }
-                if (!component && BX.X.Vue.Components) { // если компонента нет - возможно это собственный компонент
+                if (!component 
+                        && BX.App?.Vue?.Components 
+                        && BX.App.Vue.Components[ComponentName]
+                    ) { // если компонента нет - возможно это компонент приложения
+                    component = BX.App.Vue.Components[ComponentName];
+                }
+                if (!component 
+                        && BX.X.Vue.Components 
+                        && BX.X.Vue.Components[ComponentName]
+                    ) { // если компонента нет - возможно это собственный компонент
                     component = BX.X.Vue.Components[ComponentName];
                 }
                 
@@ -49,8 +63,7 @@ export const loader = {
                             components: components,
                             template: template
                         });
-                    
-                    //application.use(store);
+                    if (this.store) application.use(this.store);
                     
                     // предоставляем данные json
                     let jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');

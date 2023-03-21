@@ -3,12 +3,13 @@ this.BX = this.BX || {};
     'use strict';
 
     var Core = {};
-    console.time('realoader');
+    console.time('x.core.load');
     window.addEventListener('load', function () {
       BX.ready(function () {
-        console.timeEnd('realoader');
-        x_vue_loader.loader.init();
         BX.onCustomEvent('x.core:loaded');
+        console.timeEnd('x.core.load');
+        x_vue_loader.loader.init();
+        BX.onCustomEvent('x.core:inited');
       });
     });
 

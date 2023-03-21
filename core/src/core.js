@@ -4,11 +4,14 @@ export const Core = {
     
 }
 
-console.time('realoader');
+console.time('x.core.load');
 window.addEventListener('load', ()=>{
     BX.ready(() => {
-            console.timeEnd('realoader');
-            loaderVue.init();
             BX.onCustomEvent('x.core:loaded');
+            console.timeEnd('x.core.load');
+
+            loaderVue.init();
+
+            BX.onCustomEvent('x.core:inited');
         });
 });

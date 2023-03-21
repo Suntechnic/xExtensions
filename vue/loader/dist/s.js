@@ -6,14 +6,19 @@ this.BX.X = this.BX.X || {};
     // функция инициализации
     var loader = {
       componentstores: [],
+      store: false,
       addComponentStore: function addComponentStore(store) {
-        loader.componentstores.push(store);
+        this.componentstores.push(store);
+      },
+      addStore: function addStore(store) {
+        this.store = store;
       },
       init: function init(node) {
         var _this = this;
         console.log('initVue', node);
         node = node || document;
         node.querySelectorAll('[vue]').forEach(function (elm) {
+          var _BX$App, _BX$App$Vue;
           var ComponentName = elm.getAttribute('vue');
           var AppName = 'App' + ComponentName;
           if (typeof BX.X.Vue.Apps == 'undefined') BX.X.Vue.Apps = {};
@@ -21,14 +26,18 @@ this.BX.X = this.BX.X || {};
 
           // поиск компонента
           var component = false;
-          for (var i in loader.componentstores) {
+          for (var i in _this.componentstores) {
             var componentstore = _this.componentstores[i];
             if (babelHelpers["typeof"](componentstore[ComponentName]) == 'object') {
               component = componentstore[ComponentName];
               break;
             }
           }
-          if (!component && BX.X.Vue.Components) {
+          if (!component && (_BX$App = BX.App) !== null && _BX$App !== void 0 && (_BX$App$Vue = _BX$App.Vue) !== null && _BX$App$Vue !== void 0 && _BX$App$Vue.Components && BX.App.Vue.Components[ComponentName]) {
+            // если компонента нет - возможно это компонент приложения
+            component = BX.App.Vue.Components[ComponentName];
+          }
+          if (!component && BX.X.Vue.Components && BX.X.Vue.Components[ComponentName]) {
             // если компонента нет - возможно это собственный компонент
             component = BX.X.Vue.Components[ComponentName];
           }
@@ -47,8 +56,7 @@ this.BX.X = this.BX.X || {};
               components: components,
               template: template
             });
-
-            //application.use(store);
+            if (_this.store) application.use(_this.store);
 
             // предоставляем данные json
             var jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
