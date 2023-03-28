@@ -10,7 +10,6 @@ export const loader = {
             if (loader.componentstores[i] == store) return;
         }
         loader.componentstores.push(store);
-        console.log('addComponentStore', loader.componentstores);
     },
     
     addStore (store)  {
