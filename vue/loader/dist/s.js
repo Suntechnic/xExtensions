@@ -8,12 +8,16 @@ this.BX.X = this.BX.X || {};
       componentstores: [],
       store: false,
       addComponentStore: function addComponentStore(store) {
+        for (var i in loader.componentstores) {
+          if (loader.componentstores[i] == store) return;
+        }
         loader.componentstores.push(store);
+        console.log('addComponentStore', loader.componentstores);
       },
       addStore: function addStore(store) {
         loader.store = store;
       },
-      init: function init(node) {
+      init: BX.debounce(function (node) {
         console.log('initVue', node);
         node = node || document;
         node.querySelectorAll('[vue]').forEach(function (elm) {
@@ -80,7 +84,7 @@ this.BX.X = this.BX.X || {};
             }
           } else console.error('Component ' + ComponentName + ' not exists');
         });
-      }
+      }, 200)
     };
 
     // внутреннее событие перестройки DOM

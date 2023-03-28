@@ -6,14 +6,19 @@ export const loader = {
     store: false,
     
     addComponentStore (store)  {
+        for (let i in loader.componentstores) {
+            if (loader.componentstores[i] == store) return;
+        }
         loader.componentstores.push(store);
+        console.log('addComponentStore', loader.componentstores);
     },
     
     addStore (store)  {
         loader.store = store;
     },
-    
-    init (node)  {
+
+
+    init: BX.debounce((node) =>  {
         console.log('initVue', node);
         
         node = node || document
@@ -93,7 +98,7 @@ export const loader = {
                     
                 } else console.error('Component '+ComponentName+' not exists');
             })
-    }
+    }, 200)
 }
 
 
