@@ -6,10 +6,13 @@ export const Selector = {
     name: 'Selector',
     props: {
         options: {},
-        valuekey: {},
-        titlekey: {},
-        name: {},
-        placeholder: {default: ''}
+        valuekey: {}, // ключ значения в объекте option списка options - если не указан - то ключ в options
+        titlekey: {}, // ключ title
+        name: {}, // имя поля
+        placeholder: {default: ''},
+
+        view_search: {default: true},
+        view_reset: {default: true}
     },
     data ()
 	{
@@ -106,8 +109,8 @@ export const Selector = {
             >
         <div class="selector-display" v-on:click="toggle">{{title}}</div>
         <div class="selector-list" v-if="state.open">
-            <input v-model="state.search">
-            <span class="selector-unselect" v-if="option" v-on:click="set('')">Сбросить значение ❌</span>
+            <input v-if="view_search && option" v-model="state.search">
+            <span class="selector-unselect" v-if="view_reset && option" v-on:click="set('')">Сбросить значение ❌</span>
             <ul>
                 <li
                         v-for="option in orderedOptions[0]"

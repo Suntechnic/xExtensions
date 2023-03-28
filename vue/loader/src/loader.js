@@ -6,11 +6,11 @@ export const loader = {
     store: false,
     
     addComponentStore (store)  {
-        this.componentstores.push(store);
+        loader.componentstores.push(store);
     },
     
     addStore (store)  {
-        this.store = store;
+        loader.store = store;
     },
     
     init (node)  {
@@ -27,8 +27,8 @@ export const loader = {
                 
                 // поиск компонента
                 let component = false;
-                for (let i in this.componentstores) {
-                    let componentstore = this.componentstores[i];
+                for (let i in loader.componentstores) {
+                    let componentstore = loader.componentstores[i];
                     if (typeof componentstore[ComponentName] == 'object') {
                         component = componentstore[ComponentName];
                         break;
@@ -63,7 +63,8 @@ export const loader = {
                             components: components,
                             template: template
                         });
-                    if (this.store) application.use(this.store);
+
+                    if (loader.store) application.use(loader.store);
                     
                     // предоставляем данные json
                     let jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');

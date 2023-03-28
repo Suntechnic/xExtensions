@@ -8,13 +8,12 @@ this.BX.X = this.BX.X || {};
       componentstores: [],
       store: false,
       addComponentStore: function addComponentStore(store) {
-        this.componentstores.push(store);
+        loader.componentstores.push(store);
       },
       addStore: function addStore(store) {
-        this.store = store;
+        loader.store = store;
       },
       init: function init(node) {
-        var _this = this;
         console.log('initVue', node);
         node = node || document;
         node.querySelectorAll('[vue]').forEach(function (elm) {
@@ -26,8 +25,8 @@ this.BX.X = this.BX.X || {};
 
           // поиск компонента
           var component = false;
-          for (var i in _this.componentstores) {
-            var componentstore = _this.componentstores[i];
+          for (var i in loader.componentstores) {
+            var componentstore = loader.componentstores[i];
             if (babelHelpers["typeof"](componentstore[ComponentName]) == 'object') {
               component = componentstore[ComponentName];
               break;
@@ -56,7 +55,7 @@ this.BX.X = this.BX.X || {};
               components: components,
               template: template
             });
-            if (_this.store) application.use(_this.store);
+            if (loader.store) application.use(loader.store);
 
             // предоставляем данные json
             var jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
