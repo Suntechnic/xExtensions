@@ -63,10 +63,14 @@ this.BX.X.Vue = this.BX.X.Vue || {};
 	    };
 	  },
 	  computed: {
-	    hasValue: function hasValue() {
+	    hasValue: function hasValue()
+	    // возвращает true когда есть контент
+	    {
 	      return !!this.valueModel;
 	    },
-	    hasContented: function hasContented() {
+	    hasContented: function hasContented()
+	    // возвращает true когда есть контент или поле в фокусе
+	    {
 	      return this.hasValue || this.state.focused;
 	    }
 	  }

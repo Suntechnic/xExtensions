@@ -61,11 +61,11 @@ export const InputContented = {
 		}
 	},
 	computed: {
-		hasValue ()
+		hasValue () // возвращает true когда есть контент
 		{
 			return !!this.valueModel;
 		},
-		hasContented ()
+		hasContented () // возвращает true когда есть контент или поле в фокусе
 		{
 			return this.hasValue || this.state.focused;
 		},

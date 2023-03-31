@@ -12,7 +12,6 @@ this.BX.X = this.BX.X || {};
           if (loader.componentstores[i] == store) return;
         }
         loader.componentstores.push(store);
-        console.log('addComponentStore', loader.componentstores);
       },
       addStore: function addStore(store) {
         loader.store = store;
