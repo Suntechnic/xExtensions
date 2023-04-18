@@ -36,6 +36,16 @@ created () {
         this.arResult = this.initdata.arResult;
     },
 ```
+или
+```js
+inject: ['itemslist'],
+data () {
+    return {
+        items: this.itemslist
+    }
+},
+```
+:D
 
 Нужно иметь ввиду что данный ключ не может быть root - такой ключ зарезервирован для инхъекции данных о корневом приложении
 
