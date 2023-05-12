@@ -11,6 +11,7 @@ export const Selector = {
         name: {}, // имя поля
         placeholder: {default: ''},
 
+        multiselect: {default: false},
         view_search: {default: true},
         view_reset: {default: true}
     },
@@ -22,6 +23,28 @@ export const Selector = {
                 open: false
             }
 		}
+	},
+    created ()
+	{
+		this.modelValue2valueModel();
+	},
+    watch: {
+		valueModel (val,oval)
+        {
+            if (this.multiselect) {
+                this.$emit('update:modelValue', this.valueModel);
+            } else {
+                if (this.valueModel?.length == 1) {
+                    this.$emit('update:modelValue', this.valueModel[0]);
+                } else {
+                    this.$emit('update:modelValue', undefined);
+                }
+            }
+        },
+        modelValue (val,oval)
+        {
+            this.modelValue2valueModel();
+        }
 	},
     computed: {
         structure () {
@@ -43,15 +66,34 @@ export const Selector = {
             
             return structure;
         },
-        index () {
-            if (this.structure.map) return this.structure.map[this.valueModel];
+        indexeselected () {
+            let indexeselected = [];
+            if (this.structure.map) {
+                for (let i in this.valueModel) {
+                    indexeselected.push(this.structure.map[this.valueModel[i]]);
+                }
+                //console.log(JSON.stringify(indexeselected));
+                return indexeselected;
+            }
         },
-        option () {
-            if (this.structure.options?.length && typeof this.index != 'undefined') return this.structure.options[this.index]
+        optionselected () {
+            let optionselected = [];
+            if (this.structure.options?.length && typeof this.indexeselected != 'undefined') {
+                for (let i in this.indexeselected) {
+                    let index = this.indexeselected[i];
+
+                    optionselected.push(this.structure.options[index]);
+                }
+            }
+            return optionselected;
         },
-        title () {
-            if (this.option) return this.option.title;
-            return this.placeholder;
+        titles () {
+            let titles = [];
+            for (let i in this.optionselected) {
+                let option = this.optionselected[i];
+                titles.push(option.title);
+            }
+            return titles;
         },
         orderedOptions () {
             let ordered = [
@@ -81,6 +123,17 @@ export const Selector = {
         }
     },
     methods: {
+        modelValue2valueModel () {
+            this.valueModel = this.modelValue;
+
+            if (typeof this.valueModel == 'undefined' || this.valueModel == null || !this.valueModel) {
+                this.valueModel = [];
+            } else if (typeof this.valueModel != 'object') {
+                this.valueModel = [this.valueModel];
+            }
+
+            //console.log('valueModel',this.valueModel);
+        },
         open ()
         {
             this.state.open = true;
@@ -95,8 +148,19 @@ export const Selector = {
         },
         set (value)
         {
-            this.valueModel = value;
-            this.close();
+            if (this.multiselect) {
+                for (let i in this.valueModel) {
+                    let oneVal = this.valueModel[i];
+                    if (oneVal == value) {
+                        this.valueModel.splice(i,1);
+                        return;
+                    }
+                }
+                this.valueModel.push(value);
+            } else {
+                this.valueModel = [value];
+                this.close();
+            }
         }
     },
 	template: `
@@ -107,29 +171,29 @@ export const Selector = {
                 v-bind:value="valueModel"
                 type="hidden"
             >
-        <div class="selector-display" v-on:click="toggle">{{title}}</div>
+        <div class="selector-display" v-on:click="toggle">{{titles.join(', ')}}</div>
         <div class="selector-list" v-if="state.open">
-            <input v-if="view_search && option" v-model="state.search">
+            <input v-if="view_search" v-model="state.search">
             <span class="selector-unselect" v-if="view_reset && option" v-on:click="set('')">Сбросить значение ❌</span>
             <ul>
                 <li
                         v-for="option in orderedOptions[0]"
                         v-bind:key="'o_'+option.value"
                         v-on:click="set(option.value)"
-                        v-bind:class="{active:valueModel==option.value}"
+                        v-bind:class="{active:valueModel.includes(option.value)}"
                     >{{option.title}}</li>
                 <li
                         v-for="option in orderedOptions[1]"
                         v-bind:key="'o_'+option.value"
                         v-on:click="set(option.value)"
-                        v-bind:class="{active:valueModel==option.value}"
+                        v-bind:class="{active:valueModel.includes(option.value)}"
                         class="selector-list-item_others"
                     >{{option.title}}</li>
                 <li
                         v-for="option in orderedOptions[2]"
                         v-bind:key="'o_'+option.value"
                         v-on:click="set(option.value)"
-                        v-bind:class="{active:valueModel==option.value}"
+                        v-bind:class="{active:valueModel.includes(option.value)}"
                         class="selector-list-item_rest"
                     >{{option.title}}</li>
             </ul>

@@ -18,6 +18,9 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         placeholder: {
           "default": ''
         },
+        multiselect: {
+          "default": false
+        },
         view_search: {
           "default": true
         },
@@ -32,6 +35,26 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             open: false
           }
         };
+      },
+      created: function created() {
+        this.modelValue2valueModel();
+      },
+      watch: {
+        valueModel: function valueModel(val, oval) {
+          if (this.multiselect) {
+            this.$emit('update:modelValue', this.valueModel);
+          } else {
+            var _this$valueModel;
+            if (((_this$valueModel = this.valueModel) === null || _this$valueModel === void 0 ? void 0 : _this$valueModel.length) == 1) {
+              this.$emit('update:modelValue', this.valueModel[0]);
+            } else {
+              this.$emit('update:modelValue', undefined);
+            }
+          }
+        },
+        modelValue: function modelValue(val, oval) {
+          this.modelValue2valueModel();
+        }
       },
       computed: {
         structure: function structure() {
@@ -52,16 +75,34 @@ this.BX.X.Vue = this.BX.X.Vue || {};
           }
           return structure;
         },
-        index: function index() {
-          if (this.structure.map) return this.structure.map[this.valueModel];
+        indexeselected: function indexeselected() {
+          var indexeselected = [];
+          if (this.structure.map) {
+            for (var i in this.valueModel) {
+              indexeselected.push(this.structure.map[this.valueModel[i]]);
+            }
+            //console.log(JSON.stringify(indexeselected));
+            return indexeselected;
+          }
         },
-        option: function option() {
+        optionselected: function optionselected() {
           var _this$structure$optio;
-          if ((_this$structure$optio = this.structure.options) !== null && _this$structure$optio !== void 0 && _this$structure$optio.length && typeof this.index != 'undefined') return this.structure.options[this.index];
+          var optionselected = [];
+          if ((_this$structure$optio = this.structure.options) !== null && _this$structure$optio !== void 0 && _this$structure$optio.length && typeof this.indexeselected != 'undefined') {
+            for (var i in this.indexeselected) {
+              var index = this.indexeselected[i];
+              optionselected.push(this.structure.options[index]);
+            }
+          }
+          return optionselected;
         },
-        title: function title() {
-          if (this.option) return this.option.title;
-          return this.placeholder;
+        titles: function titles() {
+          var titles = [];
+          for (var i in this.optionselected) {
+            var option = this.optionselected[i];
+            titles.push(option.title);
+          }
+          return titles;
         },
         orderedOptions: function orderedOptions() {
           var ordered = [[], [], []];
@@ -85,6 +126,16 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         }
       },
       methods: {
+        modelValue2valueModel: function modelValue2valueModel() {
+          this.valueModel = this.modelValue;
+          if (typeof this.valueModel == 'undefined' || this.valueModel == null || !this.valueModel) {
+            this.valueModel = [];
+          } else if (babelHelpers["typeof"](this.valueModel) != 'object') {
+            this.valueModel = [this.valueModel];
+          }
+
+          //console.log('valueModel',this.valueModel);
+        },
         open: function open() {
           this.state.open = true;
         },
@@ -95,11 +146,22 @@ this.BX.X.Vue = this.BX.X.Vue || {};
           this.state.open = !this.state.open;
         },
         set: function set(value) {
-          this.valueModel = value;
-          this.close();
+          if (this.multiselect) {
+            for (var i in this.valueModel) {
+              var oneVal = this.valueModel[i];
+              if (oneVal == value) {
+                this.valueModel.splice(i, 1);
+                return;
+              }
+            }
+            this.valueModel.push(value);
+          } else {
+            this.valueModel = [value];
+            this.close();
+          }
         }
       },
-      template: "\n    <div class=\"selector\">\n        <input\n                v-if=\"name\"\n                v-bind:name=\"name\"\n                v-bind:value=\"valueModel\"\n                type=\"hidden\"\n            >\n        <div class=\"selector-display\" v-on:click=\"toggle\">{{title}}</div>\n        <div class=\"selector-list\" v-if=\"state.open\">\n            <input v-if=\"view_search && option\" v-model=\"state.search\">\n            <span class=\"selector-unselect\" v-if=\"view_reset && option\" v-on:click=\"set('')\">\u0421\u0431\u0440\u043E\u0441\u0438\u0442\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u274C</span>\n            <ul>\n                <li\n                        v-for=\"option in orderedOptions[0]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:valueModel==option.value}\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[1]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:valueModel==option.value}\"\n                        class=\"selector-list-item_others\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[2]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:valueModel==option.value}\"\n                        class=\"selector-list-item_rest\"\n                    >{{option.title}}</li>\n            </ul>\n        </div>\n    </div>\n\t"
+      template: "\n    <div class=\"selector\">\n        <input\n                v-if=\"name\"\n                v-bind:name=\"name\"\n                v-bind:value=\"valueModel\"\n                type=\"hidden\"\n            >\n        <div class=\"selector-display\" v-on:click=\"toggle\">{{titles.join(', ')}}</div>\n        <div class=\"selector-list\" v-if=\"state.open\">\n            <input v-if=\"view_search\" v-model=\"state.search\">\n            <span class=\"selector-unselect\" v-if=\"view_reset && option\" v-on:click=\"set('')\">\u0421\u0431\u0440\u043E\u0441\u0438\u0442\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u274C</span>\n            <ul>\n                <li\n                        v-for=\"option in orderedOptions[0]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:valueModel.includes(option.value)}\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[1]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:valueModel.includes(option.value)}\"\n                        class=\"selector-list-item_others\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[2]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:valueModel.includes(option.value)}\"\n                        class=\"selector-list-item_rest\"\n                    >{{option.title}}</li>\n            </ul>\n        </div>\n    </div>\n\t"
     };
 
     var Toggler = {
