@@ -50,7 +50,21 @@ this.BX.X = this.BX.X || {};
             for (var name in elm.dataset) {
               datasetAttrs = datasetAttrs + ' ' + name + '="' + elm.dataset[name] + '"';
             }
-            var template = '<' + ComponentName + datasetAttrs + '/>';
+            var template = '<' + ComponentName + datasetAttrs + '>';
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // поддержка слотов
+            var slotElms = elm.querySelectorAll('[vue-slot]');
+            slotElms.forEach(function (slotElm) {
+              var slotName = slotElm.getAttribute('vue-slot');
+              var slotContent = slotElm.innerHTML;
+              if (slotName) {
+                slotContent = '<template v-slot:' + slotName + '>' + slotContent + '</template>';
+              }
+              template = template + slotContent;
+            });
+            // поддержка слотов
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            template = template + '</' + ComponentName + '>';
             var components = {};
             components[ComponentName] = component;
             var application = ui_vue3.BitrixVue.createApp({
@@ -59,6 +73,9 @@ this.BX.X = this.BX.X || {};
               template: template
             });
             if (loader.store) application.use(loader.store);
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // поддержка индекций
 
             // предоставляем данные json
             var jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
@@ -72,6 +89,9 @@ this.BX.X = this.BX.X || {};
               'name': AppName,
               'index': BX.X.Vue.Apps[AppName].length
             });
+
+            // поддержка индекций
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // удаляем для избежания повторного монтирования
             elm.removeAttribute('vue');
