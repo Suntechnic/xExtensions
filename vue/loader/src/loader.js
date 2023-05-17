@@ -17,6 +17,22 @@ export const loader = {
     },
 
 
+    delete (name,i) {
+        if (BX.X.Vue.Apps[name]?.length) {
+            if (typeof i != 'undefined') {
+                if (BX.X.Vue.Apps[name][i]) {
+                    BX.X.Vue.Apps[name][i].unmount();
+                    delete(BX.X.Vue.Apps[name][i]);
+                }
+            } else {
+                for (let i in BX.X.Vue.Apps[name]) {
+                    loader.delete('name',i);
+                }
+            }
+        }
+    },
+
+
     init: BX.debounce((node) =>  {
         console.log('initVue', node);
         

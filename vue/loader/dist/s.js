@@ -16,6 +16,21 @@ this.BX.X = this.BX.X || {};
       addStore: function addStore(store) {
         loader.store = store;
       },
+      "delete": function _delete(name, i) {
+        var _BX$X$Vue$Apps$name;
+        if ((_BX$X$Vue$Apps$name = BX.X.Vue.Apps[name]) !== null && _BX$X$Vue$Apps$name !== void 0 && _BX$X$Vue$Apps$name.length) {
+          if (typeof i != 'undefined') {
+            if (BX.X.Vue.Apps[name][i]) {
+              BX.X.Vue.Apps[name][i].unmount();
+              delete BX.X.Vue.Apps[name][i];
+            }
+          } else {
+            for (var _i in BX.X.Vue.Apps[name]) {
+              loader["delete"]('name', _i);
+            }
+          }
+        }
+      },
       init: BX.debounce(function (node) {
         console.log('initVue', node);
         node = node || document;
