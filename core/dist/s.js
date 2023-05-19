@@ -44,9 +44,7 @@ this.BX = this.BX || {};
       }()
     };
     var ajax = {
-      cache: {
-        bumbalalay: 7
-      },
+      cache: {},
       runAction: function runAction(action, config, cacheTTL) {
         var _this = this;
         cacheTTL = parseInt(cacheTTL) || 0;

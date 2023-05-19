@@ -39,7 +39,6 @@ this.BX.X.Vue = this.BX.X.Vue || {};
       },
       created: function created() {
         this.modelValue2valueModel();
-        console.log(this.ioptions);
       },
       watch: {
         valueModel: function valueModel(val, oval) {
@@ -105,6 +104,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             var option = this.optionselected[i];
             titles.push(option.title);
           }
+          if (!titles.length && this.placeholder) titles.push(this.placeholder);
           return titles;
         },
         orderedOptions: function orderedOptions() {

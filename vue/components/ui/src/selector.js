@@ -13,6 +13,7 @@ export const Selector = {
         placeholder: {default: ''},
 
         multiselect: {default: false},
+        
         view_search: {default: true},
         view_reset: {default: true}
     },
@@ -28,7 +29,6 @@ export const Selector = {
     created ()
 	{
 		this.modelValue2valueModel();
-        console.log(this.ioptions);
 	},
     watch: {
 		valueModel (val,oval)
@@ -97,6 +97,9 @@ export const Selector = {
                 let option = this.optionselected[i];
                 titles.push(option.title);
             }
+
+            if (!titles.length && this.placeholder) titles.push(this.placeholder);
+            
             return titles;
         },
         orderedOptions () {
