@@ -17,6 +17,22 @@ export const loader = {
     },
 
 
+    delete (name,i) {
+        if (BX.X.Vue.Apps[name]?.length) {
+            if (typeof i != 'undefined') {
+                if (BX.X.Vue.Apps[name][i]) {
+                    BX.X.Vue.Apps[name][i].unmount();
+                    delete(BX.X.Vue.Apps[name][i]);
+                }
+            } else {
+                for (let i in BX.X.Vue.Apps[name]) {
+                    loader.delete('name',i);
+                }
+            }
+        }
+    },
+
+
     init: BX.debounce((node) =>  {
         console.log('initVue', node);
         
@@ -57,7 +73,22 @@ export const loader = {
                     for (let name in elm.dataset) {
                         datasetAttrs = datasetAttrs+' '+name+'="'+elm.dataset[name]+'"';
                     }
-                    let template = '<'+ComponentName+datasetAttrs+'/>';
+
+                    let template = '<'+ComponentName+datasetAttrs+'>';
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    // поддержка слотов
+                    let slotElms = elm.querySelectorAll('[vue-slot]');
+                    slotElms.forEach((slotElm)=>{
+                            let slotName = slotElm.getAttribute('vue-slot');
+                            let slotContent = slotElm.innerHTML;
+                            if (slotName) {
+                                slotContent = '<template v-slot:'+slotName+'>'+slotContent+'</template>';
+                            }
+                            template = template + slotContent;
+                        });
+                    // поддержка слотов
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    template = template + '</'+ComponentName+'>';
                     
                     const components = {};
                     
@@ -70,18 +101,25 @@ export const loader = {
 
                     if (loader.store) application.use(loader.store);
                     
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    // поддержка индекций
+
                     // предоставляем данные json
                     let jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
                     jsonElms.forEach((jsonElm)=>{
                             application.provide(jsonElm.getAttribute('name'),JSON.parse(jsonElm.innerText));
                         });
                     
+
                     // предоставляем данные о приложении
                     application.provide('root',{
                             'application': application,
                             'name': AppName,
                             'index': BX.X.Vue.Apps[AppName].length
                         });
+                        
+                    // поддержка индекций
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 
                     
                     // удаляем для избежания повторного монтирования

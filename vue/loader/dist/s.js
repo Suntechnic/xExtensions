@@ -16,6 +16,21 @@ this.BX.X = this.BX.X || {};
       addStore: function addStore(store) {
         loader.store = store;
       },
+      "delete": function _delete(name, i) {
+        var _BX$X$Vue$Apps$name;
+        if ((_BX$X$Vue$Apps$name = BX.X.Vue.Apps[name]) !== null && _BX$X$Vue$Apps$name !== void 0 && _BX$X$Vue$Apps$name.length) {
+          if (typeof i != 'undefined') {
+            if (BX.X.Vue.Apps[name][i]) {
+              BX.X.Vue.Apps[name][i].unmount();
+              delete BX.X.Vue.Apps[name][i];
+            }
+          } else {
+            for (var _i in BX.X.Vue.Apps[name]) {
+              loader["delete"]('name', _i);
+            }
+          }
+        }
+      },
       init: BX.debounce(function (node) {
         console.log('initVue', node);
         node = node || document;
@@ -50,7 +65,21 @@ this.BX.X = this.BX.X || {};
             for (var name in elm.dataset) {
               datasetAttrs = datasetAttrs + ' ' + name + '="' + elm.dataset[name] + '"';
             }
-            var template = '<' + ComponentName + datasetAttrs + '/>';
+            var template = '<' + ComponentName + datasetAttrs + '>';
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // поддержка слотов
+            var slotElms = elm.querySelectorAll('[vue-slot]');
+            slotElms.forEach(function (slotElm) {
+              var slotName = slotElm.getAttribute('vue-slot');
+              var slotContent = slotElm.innerHTML;
+              if (slotName) {
+                slotContent = '<template v-slot:' + slotName + '>' + slotContent + '</template>';
+              }
+              template = template + slotContent;
+            });
+            // поддержка слотов
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            template = template + '</' + ComponentName + '>';
             var components = {};
             components[ComponentName] = component;
             var application = ui_vue3.BitrixVue.createApp({
@@ -59,6 +88,9 @@ this.BX.X = this.BX.X || {};
               template: template
             });
             if (loader.store) application.use(loader.store);
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // поддержка индекций
 
             // предоставляем данные json
             var jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
@@ -72,6 +104,9 @@ this.BX.X = this.BX.X || {};
               'name': AppName,
               'index': BX.X.Vue.Apps[AppName].length
             });
+
+            // поддержка индекций
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // удаляем для избежания повторного монтирования
             elm.removeAttribute('vue');
