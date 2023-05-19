@@ -2,6 +2,7 @@ import {Input} from 'x.vue.mixins';
 import './selector.css';
 
 export const Selector = {
+    inject: ['ioptions'],
     mixins: [Input],
     name: 'Selector',
     props: {
@@ -27,6 +28,7 @@ export const Selector = {
     created ()
 	{
 		this.modelValue2valueModel();
+        console.log(this.ioptions);
 	},
     watch: {
 		valueModel (val,oval)
@@ -52,11 +54,13 @@ export const Selector = {
                 options: [],
                 map: {}
             };
+
+            let options = this.options || this.ioptions;
             
-            for (let i in this.options) {
+            for (let i in options) {
                 let option = {
-                    value: this.valuekey?this.options[i][this.valuekey]:i,
-                    title: this.titlekey?this.options[i][this.titlekey]:this.options[i],
+                    value: this.valuekey?options[i][this.valuekey]:i,
+                    title: this.titlekey?options[i][this.titlekey]:options[i],
                     //option: this.options[i]
                 }
                 option.searcheble = option.title.toLowerCase();
