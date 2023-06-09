@@ -5,7 +5,7 @@ export const ControllersInstances = {};
 export const core = {
 
     Controller: class {
-        constructor (node,code) {
+        constructor (node,code,options) {
 
             // получаем ноду
             if (typeof node == 'string') {
@@ -35,7 +35,7 @@ export const core = {
             ControllersInstances[this.uid] = this;
             node.dataset.controller = this.uid;
 
-            return this.init();
+            return this.init(options || {});
         }
         init () {}
     },
@@ -44,10 +44,7 @@ export const core = {
 
 export const ajax = {
 
-    cache: {
-        
-    },
-
+    cache: {},
     runAction (action,config,cacheTTL) {
         cacheTTL = parseInt(cacheTTL) || 0;
         let promise = new Promise((resolve, reject) => {

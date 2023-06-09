@@ -5,7 +5,7 @@ this.BX = this.BX || {};
     var ControllersInstances = {};
     var core = {
       Controller: /*#__PURE__*/function () {
-        function Controller(node, code) {
+        function Controller(node, code, options) {
           var _node$dataset;
           babelHelpers.classCallCheck(this, Controller);
           // получаем ноду
@@ -34,7 +34,7 @@ this.BX = this.BX || {};
           }
           ControllersInstances[this.uid] = this;
           node.dataset.controller = this.uid;
-          return this.init();
+          return this.init(options || {});
         }
         babelHelpers.createClass(Controller, [{
           key: "init",
@@ -44,9 +44,7 @@ this.BX = this.BX || {};
       }()
     };
     var ajax = {
-      cache: {
-        bumbalalay: 7
-      },
+      cache: {},
       runAction: function runAction(action, config, cacheTTL) {
         var _this = this;
         cacheTTL = parseInt(cacheTTL) || 0;
