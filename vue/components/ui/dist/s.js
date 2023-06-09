@@ -5,6 +5,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
     'use strict';
 
     var Selector = {
+      inject: ['ioptions'],
       mixins: [x_vue_mixins.Input],
       name: 'Selector',
       props: {
@@ -62,10 +63,11 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             options: [],
             map: {}
           };
-          for (var i in this.options) {
+          var options = this.options || this.ioptions;
+          for (var i in options) {
             var option = {
-              value: this.valuekey ? this.options[i][this.valuekey] : i,
-              title: this.titlekey ? this.options[i][this.titlekey] : this.options[i]
+              value: this.valuekey ? options[i][this.valuekey] : i,
+              title: this.titlekey ? options[i][this.titlekey] : options[i]
               //option: this.options[i]
             };
 
@@ -102,6 +104,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             var option = this.optionselected[i];
             titles.push(option.title);
           }
+          if (!titles.length && this.placeholder) titles.push(this.placeholder);
           return titles;
         },
         orderedOptions: function orderedOptions() {

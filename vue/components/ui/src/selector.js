@@ -2,6 +2,7 @@ import {Input} from 'x.vue.mixins';
 import './selector.css';
 
 export const Selector = {
+    inject: ['ioptions'],
     mixins: [Input],
     name: 'Selector',
     props: {
@@ -12,6 +13,7 @@ export const Selector = {
         placeholder: {default: ''},
 
         multiselect: {default: false},
+        
         view_search: {default: true},
         view_reset: {default: true}
     },
@@ -52,11 +54,13 @@ export const Selector = {
                 options: [],
                 map: {}
             };
+
+            let options = this.options || this.ioptions;
             
-            for (let i in this.options) {
+            for (let i in options) {
                 let option = {
-                    value: this.valuekey?this.options[i][this.valuekey]:i,
-                    title: this.titlekey?this.options[i][this.titlekey]:this.options[i],
+                    value: this.valuekey?options[i][this.valuekey]:i,
+                    title: this.titlekey?options[i][this.titlekey]:options[i],
                     //option: this.options[i]
                 }
                 option.searcheble = option.title.toLowerCase();
@@ -93,6 +97,9 @@ export const Selector = {
                 let option = this.optionselected[i];
                 titles.push(option.title);
             }
+
+            if (!titles.length && this.placeholder) titles.push(this.placeholder);
+            
             return titles;
         },
         orderedOptions () {
