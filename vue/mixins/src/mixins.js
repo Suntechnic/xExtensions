@@ -18,7 +18,7 @@ export const Grammar = {
     }
 }
 
-// миксин для поля ввода рабоюащий с v-model
+// миксин для поля ввода, рабоюащий с v-model
 // modelValue - входящее значение
 // valueModel - значение с которым связывается внутреннее поле
 export const Input = {

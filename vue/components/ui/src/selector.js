@@ -187,20 +187,20 @@ export const Selector = {
                         v-for="option in orderedOptions[0]"
                         v-bind:key="'o_'+option.value"
                         v-on:click="set(option.value)"
-                        v-bind:class="{active:valueModel.includes(option.value)}"
+                        v-bind:class="{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}"
                     >{{option.title}}</li>
                 <li
                         v-for="option in orderedOptions[1]"
                         v-bind:key="'o_'+option.value"
                         v-on:click="set(option.value)"
-                        v-bind:class="{active:valueModel.includes(option.value)}"
+                        v-bind:class="{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}"
                         class="selector-list-item_others"
                     >{{option.title}}</li>
                 <li
                         v-for="option in orderedOptions[2]"
                         v-bind:key="'o_'+option.value"
                         v-on:click="set(option.value)"
-                        v-bind:class="{active:valueModel.includes(option.value)}"
+                        v-bind:class="{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}"
                         class="selector-list-item_rest"
                     >{{option.title}}</li>
             </ul>
