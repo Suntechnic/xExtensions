@@ -1,3 +1,4 @@
+/* eslint-disable */
 this.BX = this.BX || {};
 this.BX.X = this.BX.X || {};
 this.BX.X.Vue = this.BX.X.Vue || {};
