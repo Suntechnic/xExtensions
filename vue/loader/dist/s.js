@@ -1,3 +1,4 @@
+/* eslint-disable */
 this.BX = this.BX || {};
 this.BX.X = this.BX.X || {};
 (function (exports,ui_vue3) {
