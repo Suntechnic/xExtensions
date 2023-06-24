@@ -3,6 +3,10 @@ import {Input,InputContented} from 'x.vue.mixins';
 export const PhoneInput = {
 	mixins: [Input,InputContented],
 	props: {
+		classes: {
+            type: String,
+			default: ''
+        },
 		name: {
             type: String,
 			default: ''
@@ -68,14 +72,13 @@ export const PhoneInput = {
         },
 	},
 	template: `
-    <span>
-        <input
-				type="text"
-				v-model="valueModel"
-				v-bind:name="name"
-                v-bind:placeholder="placeholder"
-				ref="input"
-			>
-    </span>
+	<input
+			type="text"
+			v-model="valueModel"
+			v-bind:name="name"
+			v-bind:placeholder="placeholder"
+			v-bind:class="classes"
+			ref="input"
+		/>
 	`
 }

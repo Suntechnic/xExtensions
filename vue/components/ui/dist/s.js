@@ -210,6 +210,10 @@ this.BX.X.Vue = this.BX.X.Vue || {};
     var PhoneInput = {
       mixins: [x_vue_mixins.Input, x_vue_mixins.InputContented],
       props: {
+        classes: {
+          type: String,
+          "default": ''
+        },
         name: {
           type: String,
           "default": ''
@@ -261,7 +265,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
           if (this.modelValue != val) this.$emit('update:modelValue', val);
         }
       },
-      template: "\n    <span>\n        <input\n\t\t\t\ttype=\"text\"\n\t\t\t\tv-model=\"valueModel\"\n\t\t\t\tv-bind:name=\"name\"\n                v-bind:placeholder=\"placeholder\"\n\t\t\t\tref=\"input\"\n\t\t\t>\n    </span>\n\t"
+      template: "\n\t<input\n\t\t\ttype=\"text\"\n\t\t\tv-model=\"valueModel\"\n\t\t\tv-bind:name=\"name\"\n\t\t\tv-bind:placeholder=\"placeholder\"\n\t\t\tv-bind:class=\"classes\"\n\t\t\tref=\"input\"\n\t\t/>\n\t"
     };
 
     exports.Selector = Selector;
