@@ -1,24 +1,32 @@
 [IZITOAST](https://izitoast.marcelodolza.com/)
 
 ```js
+import {iziToast} from 'x.izi';
+```
+
+```js
 BX.X.iziToast.show({
-        title: 'Спасибо',
-        message: 'Ваше сообщение получено'
+        timeout: 0,
+        title: 'Просто сообщение',
+        message: 'С обычным текстом'
     });
     
 BX.X.iziToast.warning({
-        title: 'Caution',
-        message: 'You forgot important data',
+        timeout: 0,
+        title: 'Внимание!',
+        message: 'Это сообщение предупреждающее о чем-то',
     });
 
 BX.X.iziToast.error({
+        timeout: 0,
         title: 'Ошибка',
-        message: 'Illegal operation',
+        message: 'Всё пошло совсем не так',
     });
     
 BX.X.iziToast.success({
-        title: 'OK',
-        message: 'Successfully inserted record!',
+        timeout: 0,
+        title: 'Спасибо',
+        message: 'Всё хорошо',
     });
     
 BX.X.iziToast.info({
