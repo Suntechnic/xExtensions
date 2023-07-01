@@ -268,6 +268,31 @@ this.BX.X.Vue = this.BX.X.Vue || {};
       template: "\n\t<input\n\t\t\ttype=\"text\"\n\t\t\tv-model=\"valueModel\"\n\t\t\tv-bind:name=\"name\"\n\t\t\tv-bind:placeholder=\"placeholder\"\n\t\t\tv-bind:class=\"classes\"\n\t\t\tref=\"input\"\n\t\t/>\n\t"
     };
 
+    var Tabs = {
+      inject: ['tabslist'],
+      props: {
+        classprefix: {
+          "default": ''
+        }
+      },
+      data: function data() {
+        return {
+          tabs: this.tabslist,
+          slot: false
+        };
+      },
+      created: function created() {
+        this.slot = this.tabs[0].slot;
+      },
+      methods: {
+        set: function set(name) {
+          this.slot = name;
+        }
+      },
+      template: "\n    <div v-bind:class=\"classprefix+'tabs'\">\n        <ul v-bind:class=\"classprefix+'tabs_labels'\">\n            <li \n                    v-for=\"tab in tabs\" \n                    v-bind:class=\"classprefix+'tabs_labels_item'+(slot==tab.slot?'active':'')\"\n                    v-on:click=\"set(tab.slot)\"\n                >\n                {{tab.name}}\n            </li>\n        </ul>\n        <slot v-if=\"slot\" v-bind:name=\"slot\"></slot>\n    </div>\n\t"
+    };
+
+    exports.Tabs = Tabs;
     exports.Selector = Selector;
     exports.PhoneInput = PhoneInput;
     exports.Toggler = Toggler;
