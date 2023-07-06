@@ -289,7 +289,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
           this.slot = name;
         }
       },
-      template: "\n    <div v-bind:class=\"classprefix+'tabs'\">\n        <ul v-bind:class=\"classprefix+'tabs_labels'\">\n            <li \n                    v-for=\"tab in tabs\" \n                    v-bind:class=\"classprefix+'tabs_labels_item'+(slot==tab.slot?'active':'')\"\n                    v-on:click=\"set(tab.slot)\"\n                >\n                {{tab.name}}\n            </li>\n        </ul>\n        <slot v-if=\"slot\" v-bind:name=\"slot\"></slot>\n    </div>\n\t"
+      template: "\n    <div v-bind:class=\"classprefix+'tabs'\">\n        <ul v-bind:class=\"classprefix+'tabs_labels'\">\n            <li \n                    v-for=\"tab in tabs\" \n                    v-bind:class=\"classprefix+'tabs_labels_item'+(slot==tab.slot?'active':'')\"\n                    v-on:click=\"set(tab.slot)\"\n                >\n                {{tab.name}}\n            </li>\n        </ul>\n\n        \n\n        <slot v-if=\"slot\" v-bind:name=\"'content-'+slot\"></slot>\n    </div>\n\t"
     };
 
     exports.Tabs = Tabs;

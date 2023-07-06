@@ -29,7 +29,10 @@ export const Tabs = {
                 {{tab.name}}
             </li>
         </ul>
-        <slot v-if="slot" v-bind:name="slot"></slot>
+
+        
+
+        <slot v-if="slot" v-bind:name="'content-'+slot"></slot>
     </div>
 	`
 }
