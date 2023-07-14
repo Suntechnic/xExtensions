@@ -137,7 +137,7 @@ export const loader = {
                     
                 } else console.error('Component '+ComponentName+' not exists');
             });
-        BX.onCustomEvent('x.vue.loader:inited',applicationsInRound);
+        BX.onCustomEvent('x.vue.loader:inited',{applications: applicationsInRound, node: node});
     }, 200)
 }
 
