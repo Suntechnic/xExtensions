@@ -37,6 +37,7 @@ export const loader = {
         console.log('initVue', node);
         
         node = node || document
+        let applicationsInRound = []; // список для события
         node.querySelectorAll('[vue]').forEach((elm) => {
             
                 let ComponentName = elm.getAttribute('vue');
@@ -118,7 +119,7 @@ export const loader = {
                             'index': BX.X.Vue.Apps[AppName].length
                         });
                         
-                    // поддержка индекций
+                    // поддержка инъекций
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 
                     
@@ -126,6 +127,7 @@ export const loader = {
                     elm.removeAttribute('vue');
                     if (!elm.getAttribute('vue')) {
                         application.mount(elm);
+                        applicationsInRound.push(application);
                         BX.X.Vue.Apps[AppName].push(application);
                     } else {
                         console.error('ERROR premounted!');
@@ -134,7 +136,8 @@ export const loader = {
                     
                     
                 } else console.error('Component '+ComponentName+' not exists');
-            })
+            });
+        BX.onCustomEvent('x.vue.loader:inited',applicationsInRound);
     }, 200)
 }
 

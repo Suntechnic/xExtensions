@@ -35,6 +35,7 @@ this.BX.X = this.BX.X || {};
       init: BX.debounce(function (node) {
         console.log('initVue', node);
         node = node || document;
+        var applicationsInRound = []; // список для события
         node.querySelectorAll('[vue]').forEach(function (elm) {
           var _BX$App, _BX$App$Vue;
           var ComponentName = elm.getAttribute('vue');
@@ -106,19 +107,21 @@ this.BX.X = this.BX.X || {};
               'index': BX.X.Vue.Apps[AppName].length
             });
 
-            // поддержка индекций
+            // поддержка инъекций
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // удаляем для избежания повторного монтирования
             elm.removeAttribute('vue');
             if (!elm.getAttribute('vue')) {
               application.mount(elm);
+              applicationsInRound.push(application);
               BX.X.Vue.Apps[AppName].push(application);
             } else {
               console.error('ERROR premounted!');
             }
           } else console.error('Component ' + ComponentName + ' not exists');
         });
+        BX.onCustomEvent('x.vue.loader:inited', applicationsInRound);
       }, 200)
     };
 
