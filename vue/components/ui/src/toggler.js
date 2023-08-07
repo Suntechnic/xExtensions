@@ -1,5 +1,15 @@
-import {Input} from 'x.vue.mixins';
+import {Input,} from 'x.vue.mixins';
 import './toggler.css';
+
+/*
+<div
+        vue="Toggler"
+        data-value1="1" data-title1="Значение"
+        data-value2="2" data-title2="Альтернативное значение"
+        data-name="inputname"
+        data-model-value="1"
+    ></div>
+*/
 
 export const Toggler = {
 	mixins: [Input],
@@ -21,13 +31,12 @@ export const Toggler = {
         name: {
             type: String,
 			default: ''
-        }
+        },
+        event: {
+            type: String,
+			default: ''
+        },
 	},
-    data () {
-        return {
-            
-        }
-    },
     methods: {
         toggle (val)
         {
@@ -37,6 +46,17 @@ export const Toggler = {
                 this.valueModel = this.value2;
             } else {
                 this.valueModel = this.value1;
+            }
+        }
+    },
+    watch: {
+		valueModel (val,oval)
+        {
+			if (this.event) {
+                if (BX?.onCustomEvent) BX.onCustomEvent(
+                            'x.vue.components.ui:Toggler:'+this.event, 
+                            {value: this.valueModel}
+                        );
             }
         }
     },

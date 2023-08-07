@@ -168,6 +168,16 @@ this.BX.X.Vue = this.BX.X.Vue || {};
       template: "\n    <div class=\"selector\">\n        <input\n                v-if=\"name\"\n                v-bind:name=\"name\"\n                v-bind:value=\"valueModel\"\n                type=\"hidden\"\n            >\n        <div class=\"selector-display\" v-on:click=\"toggle\">{{titles.join(', ')}}</div>\n        <div class=\"selector-list\" v-if=\"state.open\">\n            <input v-if=\"view_search\" v-model=\"state.search\">\n            <span class=\"selector-unselect\" v-if=\"view_reset && option\" v-on:click=\"set('')\">\u0421\u0431\u0440\u043E\u0441\u0438\u0442\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u274C</span>\n            <ul>\n                <li\n                        v-for=\"option in orderedOptions[0]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[1]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}\"\n                        class=\"selector-list-item_others\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[2]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}\"\n                        class=\"selector-list-item_rest\"\n                    >{{option.title}}</li>\n            </ul>\n        </div>\n    </div>\n\t"
     };
 
+    /*
+    <div
+            vue="Toggler"
+            data-value1="1" data-title1="Значение"
+            data-value2="2" data-title2="Альтернативное значение"
+            data-name="inputname"
+            data-model-value="1"
+        ></div>
+    */
+
     var Toggler = {
       mixins: [x_vue_mixins.Input],
       props: {
@@ -188,10 +198,11 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         name: {
           type: String,
           "default": ''
+        },
+        event: {
+          type: String,
+          "default": ''
         }
-      },
-      data: function data() {
-        return {};
       },
       methods: {
         toggle: function toggle(val) {
@@ -201,6 +212,16 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             this.valueModel = this.value2;
           } else {
             this.valueModel = this.value1;
+          }
+        }
+      },
+      watch: {
+        valueModel: function valueModel(val, oval) {
+          if (this.event) {
+            var _BX;
+            if ((_BX = BX) !== null && _BX !== void 0 && _BX.onCustomEvent) BX.onCustomEvent('x.vue.components.ui:Toggler:' + this.event, {
+              value: this.valueModel
+            });
           }
         }
       },
@@ -268,10 +289,24 @@ this.BX.X.Vue = this.BX.X.Vue || {};
       template: "\n\t<input\n\t\t\ttype=\"text\"\n\t\t\tv-model=\"valueModel\"\n\t\t\tv-bind:name=\"name\"\n\t\t\tv-bind:placeholder=\"placeholder\"\n\t\t\tv-bind:class=\"classes\"\n\t\t\tref=\"input\"\n\t\t/>\n\t"
     };
 
+    /*
+    <div vue="Tabs" data-classprefix="mytabs-">
+        <script type="extension/settings" name="tabslist"><?=json_encode([
+                ['slot'=>'tab1','name'=>'Таб 1'],
+                ['slot'=>'tab2','name'=>'Таб 2']
+            ]);?></script>
+        <div vue-slot="content-tab1">Содержимое 1</div>
+        <div vue-slot="content-tab2">Содержимое 2</div>
+    </div>
+    */
     var Tabs = {
       inject: ['tabslist'],
       props: {
         classprefix: {
+          "default": ''
+        },
+        event: {
+          type: String,
           "default": ''
         }
       },
@@ -283,6 +318,16 @@ this.BX.X.Vue = this.BX.X.Vue || {};
       },
       created: function created() {
         this.slot = this.tabs[0].slot;
+      },
+      watch: {
+        slot: function slot(val, oval) {
+          if (this.event) {
+            var _BX;
+            if ((_BX = BX) !== null && _BX !== void 0 && _BX.onCustomEvent) BX.onCustomEvent('x.vue.components.ui:Tabs:' + this.event, {
+              value: this.slot
+            });
+          }
+        }
       },
       methods: {
         set: function set(name) {

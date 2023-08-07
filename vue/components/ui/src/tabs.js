@@ -1,7 +1,21 @@
+/*
+<div vue="Tabs" data-classprefix="mytabs-">
+    <script type="extension/settings" name="tabslist"><?=json_encode([
+            ['slot'=>'tab1','name'=>'Таб 1'],
+            ['slot'=>'tab2','name'=>'Таб 2']
+        ]);?></script>
+    <div vue-slot="content-tab1">Содержимое 1</div>
+    <div vue-slot="content-tab2">Содержимое 2</div>
+</div>
+*/
 export const Tabs = {
 	inject: ['tabslist'],
     props: {
         classprefix: {default:''},
+        event: {
+            type: String,
+			default: ''
+        },
     },
     data () {
         return {
@@ -11,6 +25,17 @@ export const Tabs = {
     },
     created () {
         this.slot=this.tabs[0].slot;
+    },
+    watch: {
+		slot (val,oval)
+        {
+			if (this.event) {
+                if (BX?.onCustomEvent) BX.onCustomEvent(
+                            'x.vue.components.ui:Tabs:'+this.event, 
+                            {value: this.slot}
+                        );
+            }
+        }
     },
     methods: {
         set (name)
