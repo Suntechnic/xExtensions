@@ -42,37 +42,6 @@ export const core = {
 
 }
 
-export const ajax = {
-
-    cache: {},
-    runAction (action,config,cacheTTL) {
-        cacheTTL = parseInt(cacheTTL) || 0;
-        let promise = new Promise((resolve, reject) => {
-
-                if (cacheTTL) {
-                    let hash = BX.md5(action + JSON.stringify(config));
-
-                    if (this.cache[hash]) {
-                        resolve(JSON.parse(this.cache[hash]));
-                        return;
-                    }
-
-                    BX.ajax.runAction(action, config).then((response) => {
-                            this.cache[hash] = JSON.stringify(response);
-                            setTimeout(()=>{
-                                    delete this.cache[hash];
-                                },cacheTTL*1000);
-                            resolve(response);
-
-                        }, reject);
-                } else {
-                    BX.ajax.runAction(action, config).then(resolve, reject);
-                }
-            })
-
-        return promise;
-    }
-}
 
 console.time('x.core.load');
 window.addEventListener('load', ()=>{
