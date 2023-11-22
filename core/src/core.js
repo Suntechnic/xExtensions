@@ -28,9 +28,11 @@ export const core = {
 
             this.node = node; // назначаем ноду в контролер
             code = code || '';
-            this.uid = code+'_'+(Math.floor(Math.random() * 10000000));
+            let i = 1;
+            this.uid = code+'_'+i;
             while (ControllersInstances[this.uid]) {
-                this.uid = code+'_'+(Math.floor(Math.random() * 10000000));
+                i++;
+                this.uid = code+'_'+i;
             }
             
             ControllersInstances[this.uid] = this;

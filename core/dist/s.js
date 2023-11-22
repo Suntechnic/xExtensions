@@ -4,6 +4,8 @@ this.BX = this.BX || {};
     'use strict';
 
     var ControllersInstances = {};
+    // BX.X.ControllersInstances - инстанцы контроллеров
+
     var core = {
       Controller: /*#__PURE__*/function () {
         function Controller(node, code, options) {
@@ -29,9 +31,11 @@ this.BX = this.BX || {};
 
           this.node = node; // назначаем ноду в контролер
           code = code || '';
-          this.uid = code + '_' + Math.floor(Math.random() * 10000000);
+          var i = 1;
+          this.uid = code + '_' + i;
           while (ControllersInstances[this.uid]) {
-            this.uid = code + '_' + Math.floor(Math.random() * 10000000);
+            i++;
+            this.uid = code + '_' + i;
           }
           ControllersInstances[this.uid] = this;
           node.dataset.controller = this.uid;
@@ -43,32 +47,6 @@ this.BX = this.BX || {};
         }]);
         return Controller;
       }()
-    };
-    var ajax = {
-      cache: {},
-      runAction: function runAction(action, config, cacheTTL) {
-        var _this = this;
-        cacheTTL = parseInt(cacheTTL) || 0;
-        var promise = new Promise(function (resolve, reject) {
-          if (cacheTTL) {
-            var hash = BX.md5(action + JSON.stringify(config));
-            if (_this.cache[hash]) {
-              resolve(JSON.parse(_this.cache[hash]));
-              return;
-            }
-            BX.ajax.runAction(action, config).then(function (response) {
-              _this.cache[hash] = JSON.stringify(response);
-              setTimeout(function () {
-                delete _this.cache[hash];
-              }, cacheTTL * 1000);
-              resolve(response);
-            }, reject);
-          } else {
-            BX.ajax.runAction(action, config).then(resolve, reject);
-          }
-        });
-        return promise;
-      }
     };
     console.time('x.core.load');
     window.addEventListener('load', function () {
@@ -82,7 +60,6 @@ this.BX = this.BX || {};
 
     exports.ControllersInstances = ControllersInstances;
     exports.core = core;
-    exports.ajax = ajax;
 
 }((this.BX.X = this.BX.X || {}),BX.X.Vue));
 //# sourceMappingURL=s.js.map
