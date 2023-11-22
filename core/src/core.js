@@ -1,6 +1,7 @@
 import {loader as loaderVue} from 'x.vue.loader';
 
 export const ControllersInstances = {};
+// BX.X.ControllersInstances - инстанцы контроллеров
 
 export const core = {
 
