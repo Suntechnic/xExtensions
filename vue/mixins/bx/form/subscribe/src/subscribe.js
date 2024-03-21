@@ -44,8 +44,6 @@ export const MixinBxFormSubscribe = {
                     sessid: BX.bitrix_sessid()
                 };
 
-                let vm = this;
-
 				BX.ajax.post(
                         this.apiPointsUrl.add, //'/api/v1/subscribe/add',
                         data,
