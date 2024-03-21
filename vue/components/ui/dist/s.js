@@ -82,7 +82,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
           var indexeselected = [];
           if (this.structure.map) {
             for (var i in this.valueModel) {
-              indexeselected.push(this.structure.map[this.valueModel[i]]);
+              if (this.structure.map[this.valueModel[i]]) indexeselected.push(this.structure.map[this.valueModel[i]]);
             }
             //console.log(JSON.stringify(indexeselected));
             return indexeselected;
