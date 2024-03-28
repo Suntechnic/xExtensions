@@ -9,14 +9,16 @@ this.BX.X.Vue = this.BX.X.Vue || {};
       mixins: [x_vue_mixins_bx_api.MixinBxApi],
       props: {
         email: {
+          // email, если получен - будет выведен как  email по умолчанию
           type: String,
           required: true,
           "default": ''
         },
         apiPoints: {
+          // список необходимых именованных точек api проекта
           required: true,
           "default": {
-            add: 'subscribe/add'
+            add: 'subscribe/add' // куда отправлять запрос на добавление
           }
         }
       },
@@ -24,6 +26,10 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         return {
           form: {
             email: ''
+          },
+          state: {
+            exchange: 0,
+            sended: 0
           }
         };
       },
@@ -32,22 +38,40 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         this.form.email = this.email;
       },
       methods: {
-        success: function success(response) {
-          response = JSON.parse(response);
+        ////////////////////////////////////////////////////////////////////////
+        // абстрактные методы //////////////////////////////////////////////////
+        success: function success(Response) {
+          var response = JSON.parse(Response);
           console.log(response);
         },
-        fail: function fail(response) {
-          response = JSON.parse(response);
+        fail: function fail(Response) {
+          var response = JSON.parse(Response);
           console.log(response);
         },
-        save: function save() {
+        // абстрактные методы //////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        $_success: function $_success(Response) {
+          var _response$errors, _response$data;
+          var response = JSON.parse(Response);
+          if ((_response$errors = response.errors) !== null && _response$errors !== void 0 && _response$errors.length) ; else if (((_response$data = response.data) === null || _response$data === void 0 ? void 0 : _response$data.code) == 0) {
+            // все хорошо
+            this.state.sended = this.state.sended + 1;
+          }
+          this.success(Response);
+          this.state.exchange = this.state.exchange - 1;
+        },
+        $_fail: function $_fail(Response) {
+          var response = JSON.parse(Response);
+          this.fail(Response);
+          this.state.exchange = this.state.exchange - 1;
+        },
+        send: function send() {
           var data = {
             email: this.form.email,
             sessid: BX.bitrix_sessid()
           };
-          BX.ajax.post(this.apiPointsUrl.add,
-          //'/api/v1/subscribe/add',
-          data, this.success, this.fail);
+          this.state.exchange = this.state.exchange + 1;
+          BX.ajax.post(this.apiPointsUrl.add, data, this.$_success, this.$_fail);
         }
       }
     };

@@ -1,5 +1,5 @@
 /**
- * параметры upi могут быть переданы props или в инъекции, в объекте apiParams
+ * параметры api могут быть переданы props или в инъекции, в объекте apiParams
  * инъекция имеет приоритет
  * параметры будут скопированы в объект api:  {
                 host: '', // хост - по умолчения нет
@@ -10,7 +10,13 @@
  * apiFullUrl - полный url api: /api/v1/
  * apiPointsUrl - справочник url точек api: {add: '/api/v1/subscribe/add'} - локален для каждого компонента
  * 
+ * пример роутов
+    // группа api версии 1
+    $routes->prefix('api/v1')->group(function (RoutingConfigurator $routes) {
+            $routes->any('subscribe/add', [\Controllers\Subscribe::class,'add']);
+        });
  */
+
 export const MixinBxApi = {
     inject: ['apiParams'],
 	props: {

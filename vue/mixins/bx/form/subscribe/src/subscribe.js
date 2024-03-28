@@ -3,14 +3,16 @@ import {MixinBxApi} from 'x.vue.mixins.bx.api';
 export const MixinBxFormSubscribe = {
     mixins: [MixinBxApi],
 	props: {
-        email: {
+        email: { // email, если получен - будет выведен как  email по умолчанию
 			type: String,
 			required: true,
             default: ''
 		},
-        apiPoints: {
+        apiPoints: { // список необходимых именованных точек api проекта
 			required: true,
-            default: {add: 'subscribe/add'}
+            default: {
+                    add: 'subscribe/add' // куда отправлять запрос на добавление
+                }
 		}
 	},
 	data ()
@@ -18,7 +20,11 @@ export const MixinBxFormSubscribe = {
 		return {
 			form: {
 				email: ''
-			}
+			},
+            state: {
+                exchange: 0,
+                sended: 0
+            }
 		}
 	},
 	computed: {
@@ -29,27 +35,52 @@ export const MixinBxFormSubscribe = {
 		this.form.email = this.email;
 	},
 	methods: {
-        success (response) {
-            response = JSON.parse(response);
+        ////////////////////////////////////////////////////////////////////////
+        // абстрактные методы //////////////////////////////////////////////////
+        success (Response) {
+            let response = JSON.parse(Response);
             console.log(response);
         },
-        fail (response) {
-            response = JSON.parse(response);
+        fail (Response) {
+            let response = JSON.parse(Response);
             console.log(response);
         },
-		save ()
+        // абстрактные методы //////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        $_success (Response) {
+            let response = JSON.parse(Response);
+            
+            if (response.errors?.length) {
+                // вывод ошибок должен быть реализован в реализации компонента
+            } else if (response.data?.code == 0) { // все хорошо
+                this.state.sended = this.state.sended + 1
+            }
+            
+            this.success(Response);
+            this.state.exchange = this.state.exchange-1;
+        },
+        $_fail (Response) {
+            let response = JSON.parse(Response);
+            
+            
+            this.fail(Response);
+            this.state.exchange = this.state.exchange-1;
+        },
+		send ()
 		{
             let data = {
                     email: this.form.email,
                     sessid: BX.bitrix_sessid()
                 };
 
-				BX.ajax.post(
-                        this.apiPointsUrl.add, //'/api/v1/subscribe/add',
-                        data,
-                        this.success,
-                        this.fail
-                    );
+            this.state.exchange = this.state.exchange+1;
+
+            BX.ajax.post(
+                    this.apiPointsUrl.add,
+                    data,
+                    this.$_success,
+                    this.$_fail
+                );
                     
 		}
 	}
