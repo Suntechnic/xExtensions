@@ -74,7 +74,7 @@ export const Selector = {
             let indexeselected = [];
             if (this.structure.map) {
                 for (let i in this.valueModel) {
-                    if (this.structure.map[this.valueModel[i]]) 
+                    if (typeof this.structure.map[this.valueModel[i]] != 'undefined') 
                             indexeselected.push(this.structure.map[this.valueModel[i]]);
                 }
                 //console.log(JSON.stringify(indexeselected));
