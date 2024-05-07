@@ -1,4 +1,4 @@
-import {Input} from 'x.vue.mixins';
+import { Input } from 'x.vue.mixins';
 import './selector.css';
 
 export const Selector = {
@@ -10,29 +10,26 @@ export const Selector = {
         valuekey: {}, // ключ значения в объекте option списка options - если не указан - то ключ в options
         titlekey: {}, // ключ title
         name: {}, // имя поля
-        placeholder: {default: ''},
+        placeholder: { default: '' },
 
-        multiselect: {default: false},
-        
-        view_search: {default: true},
-        view_reset: {default: true}
+        multiselect: { default: false },
+
+        view_search: { default: true },
+        view_reset: { default: true }
     },
-    data ()
-	{
-		return {
-			state: {
+    data() {
+        return {
+            state: {
                 search: '',
                 open: false
             }
-		}
-	},
-    created ()
-	{
-		this.modelValue2valueModel();
-	},
+        }
+    },
+    created() {
+        this.modelValue2valueModel();
+    },
     watch: {
-		valueModel (val,oval)
-        {
+        valueModel(val, oval) {
             if (this.multiselect) {
                 this.$emit('update:modelValue', this.valueModel);
             } else {
@@ -43,45 +40,43 @@ export const Selector = {
                 }
             }
         },
-        modelValue (val,oval)
-        {
+        modelValue(val, oval) {
             this.modelValue2valueModel();
         }
-	},
+    },
     computed: {
-        structure () {
+        structure() {
             let structure = {
                 options: [],
                 map: {}
             };
 
             let options = this.options || this.ioptions;
-            
+
             for (let i in options) {
                 let option = {
-                    value: this.valuekey?options[i][this.valuekey]:i,
-                    title: this.titlekey?options[i][this.titlekey]:options[i],
+                    value: this.valuekey ? options[i][this.valuekey] : i,
+                    title: this.titlekey ? options[i][this.titlekey] : options[i],
                     //option: this.options[i]
                 }
                 option.searcheble = option.title.toLowerCase();
                 structure.map[option.value] = structure.options.length;
                 structure.options.push(option);
             }
-            
+
             return structure;
         },
-        indexeselected () {
+        indexeselected() {
             let indexeselected = [];
             if (this.structure.map) {
                 for (let i in this.valueModel) {
-                    if (typeof this.structure.map[this.valueModel[i]] != 'undefined') 
+                    if (typeof this.structure.map[this.valueModel[i]] != 'undefined')
                             indexeselected.push(this.structure.map[this.valueModel[i]]);
                 }
-                //console.log(JSON.stringify(indexeselected));
                 return indexeselected;
             }
         },
-        optionselected () {
+        optionselected() {
             let optionselected = [];
             if (this.structure.options?.length && typeof this.indexeselected != 'undefined') {
                 for (let i in this.indexeselected) {
@@ -92,7 +87,7 @@ export const Selector = {
             }
             return optionselected;
         },
-        titles () {
+        titles() {
             let titles = [];
             for (let i in this.optionselected) {
                 let option = this.optionselected[i];
@@ -100,16 +95,16 @@ export const Selector = {
             }
 
             if (!titles.length && this.placeholder) titles.push(this.placeholder);
-            
+
             return titles;
         },
-        orderedOptions () {
+        orderedOptions() {
             let ordered = [
                 [],
                 [],
                 []
             ];
-            
+
             if (this.state.search) {
                 let search = this.state.search.toLowerCase();
                 for (let i in this.structure.options) {
@@ -126,41 +121,34 @@ export const Selector = {
             } else {
                 ordered[0] = this.structure.options;
             }
-            
+
             return ordered;
         }
     },
     methods: {
-        modelValue2valueModel () {
+        modelValue2valueModel() {
             this.valueModel = this.modelValue;
-
             if (typeof this.valueModel == 'undefined' || this.valueModel == null || !this.valueModel) {
                 this.valueModel = [];
             } else if (typeof this.valueModel != 'object') {
                 this.valueModel = [this.valueModel];
             }
-
-            //console.log('valueModel',this.valueModel);
         },
-        open ()
-        {
+        open() {
             this.state.open = true;
         },
-        close ()
-        {
+        close() {
             this.state.open = false;
         },
-        toggle ()
-        {
+        toggle() {
             this.state.open = !this.state.open;
         },
-        set (value)
-        {
+        set(value) {
             if (this.multiselect) {
                 for (let i in this.valueModel) {
                     let oneVal = this.valueModel[i];
                     if (oneVal == value) {
-                        this.valueModel.splice(i,1);
+                        this.valueModel.splice(i, 1);
                         return;
                     }
                 }
@@ -171,7 +159,7 @@ export const Selector = {
             }
         }
     },
-	template: `
+    template: /*vue-html*/`
     <div class="selector">
         <input
                 v-if="name"
