@@ -18,6 +18,9 @@ this.BX.X.Vue = this.BX.X.Vue || {};
      * apiFullUrl - полный url api: /api/v1/
      * apiPointsUrl - справочник url точек api: {add: '/api/v1/subscribe/add'} - локален для каждого компонента
      * 
+     * метод getPointUrl служит для получения url эндпоинта по его имени
+     * вторым параметром передаются данные для замены в url
+     * 
      * пример роутов
         // группа api версии 1
         $routes->prefix('api/v1')->group(function (RoutingConfigurator $routes) {
@@ -86,6 +89,19 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             refPonintsUrl[name] = this.apiFullUrl + this.api.points[name];
           }
           return refPonintsUrl;
+        }
+      },
+      methods: {
+        getPointUrl: function getPointUrl(name, data) {
+          var PointUrl = this.apiPointsUrl[name];
+          if (PointUrl && data && babelHelpers["typeof"](data) == 'object') {
+            for (var Key in data) {
+              var Val = data[Key];
+              var Placer = '{' + Key + '}';
+              PointUrl = PointUrl.replace(Placer, Val);
+            }
+          }
+          return PointUrl;
         }
       }
     };

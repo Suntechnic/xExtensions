@@ -932,7 +932,7 @@ this.BX = this.BX || {};
 	        }
 	      } else {
 	        if (POSITIONS.indexOf(settings.position) == -1) {
-	          console.warn('[' + PLUGIN_NAME + '] Incorrect position.\nIt can be вЂє ' + POSITIONS);
+	          console.warn('[' + PLUGIN_NAME + '] Incorrect position.\nIt can be › ' + POSITIONS);
 	          return;
 	        }
 	        if (ISMOBILE || window.innerWidth <= MOBILEWIDTH) {
