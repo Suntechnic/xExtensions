@@ -127,3 +127,22 @@ BX.X.iziToast.show({
         onClosed: function () {}
     });
 ```
+
+Пример стилизации цвета штатных уведомлений:
+```css
+.iziToast-wrapper .iziToast.iziToast-color-red {
+    background-color: #ff0000;
+}
+.iziToast-wrapper .iziToast.iziToast-color-red .iziToast-title,
+.iziToast-wrapper .iziToast.iziToast-color-red .iziToast-message {
+    color: white;
+}
+
+.iziToast-wrapper .iziToast.iziToast-color-orange {
+    background-color: #f3cdfe;
+}
+
+.iziToast-wrapper .iziToast.iziToast-color-green {
+    background-color: #d6fe9b;
+}
+```
