@@ -75,6 +75,11 @@ data () {
 BX.onCustomEvent('x.vue.loader:initVue');
 ```
 
+Так же можно передать конкретную ноду для инициализации:
+```js
+BX.X.Vue.loader.init(node);
+```
+
 Добавления других хранилищ компонентов
 ```js
 window.addEventListener('load', ()=>{
