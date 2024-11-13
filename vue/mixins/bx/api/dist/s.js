@@ -13,7 +13,14 @@ this.BX.X.Vue = this.BX.X.Vue || {};
                     host: '', // хост - по умолчения нет
     				url: '/api/', // папка api
                     version: 'v1', // версия (может быть пустой - будет пропущена)
-                    points: {add: 'subscribe/add'} // справочник точек api с именами
+                    points: {
+                        add: 'subscribe/add',
+                        del: {
+                            uri: 'subscribe/del/{Id}',
+                            methods: ['GET'],
+                            parameters: {Id: '.*'}
+                        }
+                    } // справочник точек api с именами
     			}
      * apiFullUrl - полный url api: /api/v1/
      * apiPointsUrl - справочник url точек api: {add: '/api/v1/subscribe/add'} - локален для каждого компонента
@@ -86,6 +93,13 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         apiPointsUrl: function apiPointsUrl() {
           var refPonintsUrl = {};
           for (var name in this.api.points) {
+            var EndPoint = this.api.points[name];
+            if (typeof EndPoint != 'string' && EndPoint.uri) {
+              EndPoint = EndPoint.uri;
+            } else {
+              console.error('x.vue.bx.api', 'Invalid endpoint settings' + name, EndPoint);
+              continue;
+            }
             refPonintsUrl[name] = this.apiFullUrl + this.api.points[name];
           }
           return refPonintsUrl;
@@ -94,14 +108,18 @@ this.BX.X.Vue = this.BX.X.Vue || {};
       methods: {
         getPointUrl: function getPointUrl(name, data) {
           var PointUrl = this.apiPointsUrl[name];
-          if (PointUrl && data && babelHelpers["typeof"](data) == 'object') {
-            for (var Key in data) {
-              var Val = data[Key];
-              var Placer = '{' + Key + '}';
-              PointUrl = PointUrl.replace(Placer, Val);
+          if (PointUrl) {
+            if (data && babelHelpers["typeof"](data) == 'object') {
+              for (var Key in data) {
+                var Val = data[Key];
+                var Placer = '{' + Key + '}';
+                PointUrl = PointUrl.replace(Placer, Val);
+              }
             }
+            return PointUrl;
+          } else {
+            console.error('x.vue.bx.api', 'Invalid endpoint: ' + name, this.apiPointsUrl);
           }
-          return PointUrl;
         }
       }
     };
