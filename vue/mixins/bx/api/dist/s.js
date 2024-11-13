@@ -5,28 +5,29 @@ this.BX.X.Vue = this.BX.X.Vue || {};
 (function (exports) {
     'use strict';
 
-    var _apiPoints;
     /**
-     * параметры api могут быть переданы props или в инъекции, в объекте apiParams
-     * инъекция имеет приоритет
-     * параметры будут скопированы в объект api:  {
-                    host: '', // хост - по умолчения нет
-    				url: '/api/', // папка api
-                    version: 'v1', // версия (может быть пустой - будет пропущена)
-                    points: {
-                        add: 'subscribe/add',
-                        del: {
-                            uri: 'subscribe/del/{Id}',
-                            methods: ['GET'],
-                            parameters: {Id: '.*'}
-                        }
-                    } // справочник точек api с именами
-    			}
-     * apiFullUrl - полный url api: /api/v1/
-     * apiPointsUrl - справочник url точек api: {add: '/api/v1/subscribe/add'} - локален для каждого компонента
+     * компонент использующий миксин, должен содержать ключ api
+     * в ключе api должен быть ключ points содержащий описания эндпонинтов вида:
      * 
-     * метод getPointUrl служит для получения url эндпоинта по его имени
-     * вторым параметром передаются данные для замены в url
+    userGet: {
+        uri: "/api/v1/user/{Id}/",
+        parameters: {
+            Id: "[^/]+"
+        },
+        methods: [
+            "GET",
+            "HEAD"
+        ]
+    },
+    userSet: {
+        uri: "/api/v1/user/{Id}/",
+        parameters: {
+            Id: "[^/]+"
+        },
+        methods: [
+            "POST"
+        ]
+    },
      * 
      * пример роутов
         // группа api версии 1
@@ -36,89 +37,72 @@ this.BX.X.Vue = this.BX.X.Vue || {};
      */
 
     var MixinBxApi = {
-      inject: ['apiParams'],
-      props: {
-        apiHost: {
-          type: String,
-          required: true,
-          "default": ''
-        },
-        apiUrl: {
-          type: String,
-          required: true,
-          "default": '/api/'
-        },
-        apiVersion: {
-          type: String,
-          required: true,
-          "default": 'v1'
-        },
-        apiPoints: (_apiPoints = {
-          required: Object
-        }, babelHelpers.defineProperty(_apiPoints, "required", true), babelHelpers.defineProperty(_apiPoints, "default", {}), _apiPoints)
-      },
       data: function data() {
         return {
-          api: {
-            host: '',
-            url: '/api/',
-            version: 'v1',
-            points: {}
+          apiState: {
+            probe: 0,
+            queryWaitingResponse: 0
           }
         };
       },
-      created: function created() {
-        var _this$apiParams, _this$apiParams2, _this$apiParams3, _this$apiParams4;
-        if ((_this$apiParams = this.apiParams) !== null && _this$apiParams !== void 0 && _this$apiParams.host) {
-          this.api.host = this.apiParams.host;
-        } else this.api.host = this.apiHost;
-        if ((_this$apiParams2 = this.apiParams) !== null && _this$apiParams2 !== void 0 && _this$apiParams2.url) {
-          this.api.url = this.apiParams.url;
-        } else this.api.url = this.apiUrl;
-        if ((_this$apiParams3 = this.apiParams) !== null && _this$apiParams3 !== void 0 && _this$apiParams3.version) {
-          this.api.version = this.apiParams.version;
-        } else this.api.version = this.apiVersion;
-        if ((_this$apiParams4 = this.apiParams) !== null && _this$apiParams4 !== void 0 && _this$apiParams4.points) {
-          this.api.points = this.apiParams.points;
-        } else this.api.points = this.apiPoints;
-      },
-      computed: {
-        apiFullUrl: function apiFullUrl() {
-          var Url = this.api.host + this.api.url;
-          if (this.api.version) {
-            Url = Url + this.api.version + '/';
-          }
-          return Url;
-        },
-        apiPointsUrl: function apiPointsUrl() {
-          var refPonintsUrl = {};
-          for (var name in this.api.points) {
-            var EndPoint = this.api.points[name];
-            if (typeof EndPoint != 'string' && EndPoint.uri) {
-              EndPoint = EndPoint.uri;
-            } else {
-              console.error('x.vue.bx.api', 'Invalid endpoint settings' + name, EndPoint);
-              continue;
-            }
-            refPonintsUrl[name] = this.apiFullUrl + this.api.points[name];
-          }
-          return refPonintsUrl;
-        }
-      },
       methods: {
         getPointUrl: function getPointUrl(name, data) {
-          var PointUrl = this.apiPointsUrl[name];
-          if (PointUrl) {
-            if (data && babelHelpers["typeof"](data) == 'object') {
-              for (var Key in data) {
-                var Val = data[Key];
-                var Placer = '{' + Key + '}';
-                PointUrl = PointUrl.replace(Placer, Val);
+          var _this$api;
+          if ((_this$api = this.api) !== null && _this$api !== void 0 && _this$api.points) {
+            var EndPoint = this.api.points[name];
+            if (EndPoint !== null && EndPoint !== void 0 && EndPoint.uri) {
+              var Url = EndPoint.uri;
+              if (data && babelHelpers["typeof"](data) == 'object') {
+                for (var Key in data) {
+                  var Val = data[Key];
+                  var Placer = '{' + Key + '}';
+                  Url = Url.replace(Placer, Val);
+                }
               }
+              return Url;
             }
-            return PointUrl;
+            console.error('x.vue.bx.api', 'Invalid endpoint: ' + name, EndPoint);
           } else {
-            console.error('x.vue.bx.api', 'Invalid endpoint: ' + name, this.apiPointsUrl);
+            console.error('x.vue.bx.api', 'API is not available');
+          }
+        },
+        queryPoint: function queryPoint(name, data, callback) {
+          var _this$api2,
+            _this = this;
+          if ((_this$api2 = this.api) !== null && _this$api2 !== void 0 && _this$api2.points) {
+            var _BX;
+            data = data || {};
+            var EndPoint = this.api.points[name];
+            var DefaultMethod = EndPoint.methods[0] || 'GET';
+            var Url = this.getPointUrl(name, data);
+            var method = BX.ajax['get'];
+            if (DefaultMethod == 'POST') method = BX.ajax['post'];
+            this.apiState.queryWaitingResponse++;
+            if (!data.sessid && (_BX = BX) !== null && _BX !== void 0 && _BX.bitrix_sessid) {
+              data.sessid = BX.bitrix_sessid();
+            }
+            method(Url, data, function (response) {
+              _this.apiState.queryWaitingResponse--;
+              callback(response);
+            });
+          } else {
+            var reCall = function reCall() {
+              _this.queryPoint(name, data, callback);
+            };
+            if (this.apiState.probe) {
+              if (this.apiState.probe == 16) {
+                console.warn('x.vue.bx.api', 'Very long waiting for the API to be ready');
+              }
+              if (this.apiState.probe > 128) {
+                console.error('x.vue.bx.api', 'Very long waiting for the API to be ready. The API has been stopped!');
+                return;
+              }
+              setTimeout(reCall, 100 * this.apiState.probe);
+              this.apiState.probe++;
+            } else {
+              this.apiState.probe = 1;
+              this.$nextTick(reCall);
+            }
           }
         }
       }
