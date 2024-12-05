@@ -17,12 +17,28 @@ this.BX.X = this.BX.X || {};
       addStore: function addStore(store) {
         loader.store = store;
       },
+      cleanNode: function cleanNode(node) {
+        node = node || document;
+        var Pointer;
+        if (node.getAttribute && (Pointer = node.getAttribute('vueinstance'))) {
+          // если эта нода приложения
+          var pointer = Pointer.split(':');
+          this["delete"](pointer[0], pointer[1]);
+        } else {
+          // иначе ищем в этой ноде все ноды приложений
+          var _loader = this;
+          node.querySelectorAll('[vueinstance]').forEach(function (elm) {
+            _loader.cleanNode(elm);
+          });
+        }
+      },
       "delete": function _delete(name, i) {
         var _BX$X$Vue$Apps$name;
         if ((_BX$X$Vue$Apps$name = BX.X.Vue.Apps[name]) !== null && _BX$X$Vue$Apps$name !== void 0 && _BX$X$Vue$Apps$name.length) {
           if (typeof i != 'undefined') {
             if (BX.X.Vue.Apps[name][i]) {
               BX.X.Vue.Apps[name][i].unmount();
+              //BX.X.Vue.Apps[name][i].destroy();
               delete BX.X.Vue.Apps[name][i];
             }
           } else {
@@ -33,7 +49,8 @@ this.BX.X = this.BX.X || {};
         }
       },
       init: BX.debounce(function (node) {
-        console.log('initVue', node);
+        //console.log('initVue', node);
+
         node = node || document;
         var applicationsInRound = []; // список для события
         node.querySelectorAll('[vue]').forEach(function (elm) {
@@ -92,7 +109,7 @@ this.BX.X = this.BX.X || {};
             if (loader.store) application.use(loader.store);
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // поддержка индекций
+            // поддержка инъекций
 
             // предоставляем данные json
             var jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
@@ -115,6 +132,7 @@ this.BX.X = this.BX.X || {};
             if (!elm.getAttribute('vue')) {
               application.mount(elm);
               applicationsInRound.push(application);
+              elm.setAttribute('vueinstance', AppName + ':' + BX.X.Vue.Apps[AppName].length);
               BX.X.Vue.Apps[AppName].push(application);
             } else {
               console.error('ERROR premounted!');

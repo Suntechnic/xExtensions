@@ -16,12 +16,27 @@ export const loader = {
         loader.store = store;
     },
 
+    cleanNode (node) {
+        node = node || document;
+
+        let Pointer;
+        if (node.getAttribute && (Pointer = node.getAttribute('vueinstance'))) { // если эта нода приложения
+            let pointer = Pointer.split(':');
+            this.delete(pointer[0],pointer[1]);
+        } else { // иначе ищем в этой ноде все ноды приложений
+            let loader = this;
+            node.querySelectorAll('[vueinstance]').forEach((elm) => {
+                loader.cleanNode(elm);
+            });
+        }
+    },
 
     delete (name,i) {
         if (BX.X.Vue.Apps[name]?.length) {
             if (typeof i != 'undefined') {
                 if (BX.X.Vue.Apps[name][i]) {
                     BX.X.Vue.Apps[name][i].unmount();
+                    //BX.X.Vue.Apps[name][i].destroy();
                     delete(BX.X.Vue.Apps[name][i]);
                 }
             } else {
@@ -34,7 +49,7 @@ export const loader = {
 
 
     init: BX.debounce((node) =>  {
-        console.log('initVue', node);
+        //console.log('initVue', node);
         
         node = node || document
         let applicationsInRound = []; // список для события
@@ -103,7 +118,7 @@ export const loader = {
                     if (loader.store) application.use(loader.store);
                     
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    // поддержка индекций
+                    // поддержка инъекций
 
                     // предоставляем данные json
                     let jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
@@ -128,7 +143,10 @@ export const loader = {
                     if (!elm.getAttribute('vue')) {
                         application.mount(elm);
                         applicationsInRound.push(application);
+
+                        elm.setAttribute('vueinstance', AppName+':'+BX.X.Vue.Apps[AppName].length);
                         BX.X.Vue.Apps[AppName].push(application);
+
                     } else {
                         console.error('ERROR premounted!');
                     }
