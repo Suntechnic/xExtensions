@@ -12,11 +12,11 @@ this.BX.X.Vue = this.BX.X.Vue || {};
       props: {
         options: {},
         valuekey: {},
-        // ключ значения в объекте option списка options - если не указан - то ключ в options
+        // РєР»СЋС‡ Р·РЅР°С‡РµРЅРёСЏ РІ РѕР±СЉРµРєС‚Рµ option СЃРїРёСЃРєР° options - РµСЃР»Рё РЅРµ СѓРєР°Р·Р°РЅ - С‚Рѕ РєР»СЋС‡ РІ options
         titlekey: {},
-        // ключ title
+        // РєР»СЋС‡ title
         name: {},
-        // имя поля
+        // РёРјСЏ РїРѕР»СЏ
         placeholder: {
           "default": ''
         },
@@ -168,8 +168,8 @@ this.BX.X.Vue = this.BX.X.Vue || {};
     /*
     <div
             vue="Toggler"
-            data-value1="1" data-title1="Значение"
-            data-value2="2" data-title2="Альтернативное значение"
+            data-value1="1" data-title1="Р—РЅР°С‡РµРЅРёРµ"
+            data-value2="2" data-title2="РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ"
             data-name="inputname"
             data-model-value="1"
         ></div>
@@ -251,20 +251,20 @@ this.BX.X.Vue = this.BX.X.Vue || {};
       methods: {
         format: function format(val) {
           if (val == '' || val == '+7 ' || val == '+7' || val == '+') return val;
-          val = val.replace(/\D/g, '') // убираем все нечилас
-          .slice(0, 11) // обрезаем до 11 цифр
-          .split(/(?=.)/); // преобразуем в массив
-          if (val[0] != 7) val[0] = 7; // Заменяем первую цифру на 7
-          if (val.length == 11) ; // если цифр 11 поднимаем флаг эммиссии
+          val = val.replace(/\D/g, '') // СѓР±РёСЂР°РµРј РІСЃРµ РЅРµС‡РёР»Р°СЃ
+          .slice(0, 11) // РѕР±СЂРµР·Р°РµРј РґРѕ 11 С†РёС„СЂ
+          .split(/(?=.)/); // РїСЂРµРѕР±СЂР°Р·СѓРµРј РІ РјР°СЃСЃРёРІ
+          if (val[0] != 7) val[0] = 7; // Р—Р°РјРµРЅСЏРµРј РїРµСЂРІСѓСЋ С†РёС„СЂСѓ РЅР° 7
+          if (val.length == 11) ; // РµСЃР»Рё С†РёС„СЂ 11 РїРѕРґРЅРёРјР°РµРј С„Р»Р°Рі СЌРјРјРёСЃСЃРёРё
 
-          // форматирование
+          // С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
           var i = val.length - 1;
           if (0 <= i) val.splice(1, 0, ' (');
           if (4 <= i) val.splice(5, 0, ') ');
           if (7 <= i) val.splice(9, 0, '-');
           if (9 <= i) val.splice(12, 0, '-');
 
-          // подоготовка
+          // РїРѕРґРѕРіРѕС‚РѕРІРєР°
           var val = '+' + val.join('');
           return val;
         }
@@ -289,11 +289,11 @@ this.BX.X.Vue = this.BX.X.Vue || {};
     /*
     <div vue="Tabs" data-classprefix="mytabs-">
         <script type="extension/settings" name="tabslist"><?=json_encode([
-                ['slot'=>'tab1','name'=>'Таб 1'],
-                ['slot'=>'tab2','name'=>'Таб 2']
+                ['slot'=>'tab1','name'=>'РўР°Р± 1'],
+                ['slot'=>'tab2','name'=>'РўР°Р± 2']
             ]);?></script>
-        <div vue-slot="content-tab1">Содержимое 1</div>
-        <div vue-slot="content-tab2">Содержимое 2</div>
+        <div vue-slot="content-tab1">РЎРѕРґРµСЂР¶РёРјРѕРµ 1</div>
+        <div vue-slot="content-tab2">РЎРѕРґРµСЂР¶РёРјРѕРµ 2</div>
     </div>
     */
     var Tabs = {
