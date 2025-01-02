@@ -1,10 +1,9 @@
-import { Input } from 'x.vue.mixins';
 import './selector.css';
 
 export const Selector = {
     inject: ['ioptions'],
-    mixins: [Input],
     name: 'Selector',
+    emits: ['update:modelValue'],
     props: {
         options: {},
         valuekey: {}, // ключ значения в объекте option списка options - если не указан - то ключ в options
@@ -15,10 +14,13 @@ export const Selector = {
         multiselect: { default: false },
 
         view_search: { default: true },
-        view_reset: { default: true }
+        view_reset: { default: true },
+
+        modelValue: {},
     },
     data() {
         return {
+            insideValue: [],
             state: {
                 search: '',
                 open: false
@@ -26,22 +28,26 @@ export const Selector = {
         }
     },
     created() {
-        this.modelValue2valueModel();
+        this.modelValue2insideValue();
     },
     watch: {
-        valueModel(val, oval) {
+        insideValue(val, oval) {
+            if (JSON.stringify(val) == JSON.stringify(oval)) return;
+            let Value4ebmit;
             if (this.multiselect) {
-                this.$emit('update:modelValue', this.valueModel);
+                Value4ebmit = JSON.parse(JSON.stringify(this.insideValue));
             } else {
-                if (this.valueModel?.length == 1) {
-                    this.$emit('update:modelValue', this.valueModel[0]);
+                if (this.insideValue?.length == 1) {
+                    Value4ebmit = this.insideValue[0];
                 } else {
-                    this.$emit('update:modelValue', undefined);
+                    Value4ebmit = undefined;
                 }
             }
+            if (JSON.stringify(Value4ebmit) != JSON.stringify(this.modelValue)) 
+                    this.$emit('update:modelValue', Value4ebmit);
         },
         modelValue(val, oval) {
-            this.modelValue2valueModel();
+            this.modelValue2insideValue();
         }
     },
     computed: {
@@ -69,9 +75,9 @@ export const Selector = {
         indexeselected() {
             let indexeselected = [];
             if (this.structure.map) {
-                for (let i in this.valueModel) {
-                    if (typeof this.structure.map[this.valueModel[i]] != 'undefined')
-                            indexeselected.push(this.structure.map[this.valueModel[i]]);
+                for (let i in this.insideValue) {
+                    if (typeof this.structure.map[this.insideValue[i]] != 'undefined')
+                            indexeselected.push(this.structure.map[this.insideValue[i]]);
                 }
                 return indexeselected;
             }
@@ -126,13 +132,17 @@ export const Selector = {
         }
     },
     methods: {
-        modelValue2valueModel() {
-            this.valueModel = this.modelValue;
-            if (typeof this.valueModel == 'undefined' || this.valueModel == null || !this.valueModel) {
-                this.valueModel = [];
-            } else if (typeof this.valueModel != 'object') {
-                this.valueModel = [this.valueModel];
+        modelValue2insideValue() {
+            let insideValueNew = [];
+            if (typeof this.modelValue == 'undefined' || this.modelValue == null || !this.modelValue) {
+                insideValueNew = [];
+            } else if (typeof this.modelValue == 'object') {
+                insideValueNew = JSON.parse(JSON.stringify(this.modelValue))
+            } else if (typeof this.modelValue != 'object') {
+                insideValueNew = [this.modelValue];
             }
+            if (JSON.stringify(this.insideValue) != JSON.stringify(insideValueNew)) 
+                    this.insideValue = insideValueNew;
         },
         open() {
             this.state.open = true;
@@ -145,16 +155,16 @@ export const Selector = {
         },
         set(value) {
             if (this.multiselect) {
-                for (let i in this.valueModel) {
-                    let oneVal = this.valueModel[i];
+                for (let i in this.insideValue) {
+                    let oneVal = this.insideValue[i];
                     if (oneVal == value) {
-                        this.valueModel.splice(i, 1);
+                        this.insideValue.splice(i, 1);
                         return;
                     }
                 }
-                this.valueModel.push(value);
+                this.insideValue.push(value);
             } else {
-                this.valueModel = [value];
+                this.insideValue = [value];
                 this.close();
             }
         }
@@ -164,32 +174,32 @@ export const Selector = {
         <input
                 v-if="name"
                 v-bind:name="name"
-                v-bind:value="valueModel"
+                v-bind:value="insideValue"
                 type="hidden"
             >
         <div class="selector-display" v-on:click="toggle">{{titles.join(', ')}}</div>
         <div class="selector-list" v-if="state.open">
             <input v-if="view_search" v-model="state.search">
-            <span class="selector-unselect" v-if="view_reset && option" v-on:click="set('')">Сбросить значение ❌</span>
+            <span class="selector-unselect" v-if="view_reset && optionselected.length" v-on:click="set('')">Сбросить значение ❌</span>
             <ul>
                 <li
                         v-for="option in orderedOptions[0]"
                         v-bind:key="'o_'+option.value"
                         v-on:click="set(option.value)"
-                        v-bind:class="{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}"
+                        v-bind:class="{active:(insideValue && typeof insideValue == 'object' && insideValue.includes(option.value))}"
                     >{{option.title}}</li>
                 <li
                         v-for="option in orderedOptions[1]"
                         v-bind:key="'o_'+option.value"
                         v-on:click="set(option.value)"
-                        v-bind:class="{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}"
+                        v-bind:class="{active:(insideValue && typeof insideValue == 'object' && insideValue.includes(option.value))}"
                         class="selector-list-item_others"
                     >{{option.title}}</li>
                 <li
                         v-for="option in orderedOptions[2]"
                         v-bind:key="'o_'+option.value"
                         v-on:click="set(option.value)"
-                        v-bind:class="{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}"
+                        v-bind:class="{active:(insideValue && typeof insideValue == 'object' && insideValue.includes(option.value))}"
                         class="selector-list-item_rest"
                     >{{option.title}}</li>
             </ul>
