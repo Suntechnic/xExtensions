@@ -61,9 +61,15 @@ export const MixinBxApi = {
             }
         },
         queryPoint (name, data, callback) {
-            if (this.api?.points) {
+            if (this.api?.version && this.api?.points) { // если есть версия (нет версии - значит api не загружен) и точки
                 data = data || {};
                 let EndPoint = this.api.points[name];
+
+                if (!EndPoint) {
+                    console.error('x.vue.bx.api','Invalid endpoint: '+name,this.api.points);
+                    return;
+                }
+
                 let DefaultMethod = EndPoint.methods[0] || 'GET';
                 let Url = this.getPointUrl(name, data);
 

@@ -7,8 +7,8 @@ this.BX.X.Vue = this.BX.X.Vue || {};
 
     var Selector = {
       inject: ['ioptions'],
-      mixins: [x_vue_mixins.Input],
       name: 'Selector',
+      emits: ['update:modelValue'],
       props: {
         options: {},
         valuekey: {},
@@ -28,10 +28,12 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         },
         view_reset: {
           "default": true
-        }
+        },
+        modelValue: {}
       },
       data: function data() {
         return {
+          insideValue: [],
           state: {
             search: '',
             open: false
@@ -39,23 +41,26 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         };
       },
       created: function created() {
-        this.modelValue2valueModel();
+        this.modelValue2insideValue();
       },
       watch: {
-        valueModel: function valueModel(val, oval) {
+        insideValue: function insideValue(val, oval) {
+          if (JSON.stringify(val) == JSON.stringify(oval)) return;
+          var Value4ebmit;
           if (this.multiselect) {
-            this.$emit('update:modelValue', this.valueModel);
+            Value4ebmit = JSON.parse(JSON.stringify(this.insideValue));
           } else {
-            var _this$valueModel;
-            if (((_this$valueModel = this.valueModel) === null || _this$valueModel === void 0 ? void 0 : _this$valueModel.length) == 1) {
-              this.$emit('update:modelValue', this.valueModel[0]);
+            var _this$insideValue;
+            if (((_this$insideValue = this.insideValue) === null || _this$insideValue === void 0 ? void 0 : _this$insideValue.length) == 1) {
+              Value4ebmit = this.insideValue[0];
             } else {
-              this.$emit('update:modelValue', undefined);
+              Value4ebmit = undefined;
             }
           }
+          if (JSON.stringify(Value4ebmit) != JSON.stringify(this.modelValue)) this.$emit('update:modelValue', Value4ebmit);
         },
         modelValue: function modelValue(val, oval) {
-          this.modelValue2valueModel();
+          this.modelValue2insideValue();
         }
       },
       computed: {
@@ -81,8 +86,8 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         indexeselected: function indexeselected() {
           var indexeselected = [];
           if (this.structure.map) {
-            for (var i in this.valueModel) {
-              if (typeof this.structure.map[this.valueModel[i]] != 'undefined') indexeselected.push(this.structure.map[this.valueModel[i]]);
+            for (var i in this.insideValue) {
+              if (typeof this.structure.map[this.insideValue[i]] != 'undefined') indexeselected.push(this.structure.map[this.insideValue[i]]);
             }
             return indexeselected;
           }
@@ -129,13 +134,16 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         }
       },
       methods: {
-        modelValue2valueModel: function modelValue2valueModel() {
-          this.valueModel = this.modelValue;
-          if (typeof this.valueModel == 'undefined' || this.valueModel == null || !this.valueModel) {
-            this.valueModel = [];
-          } else if (babelHelpers["typeof"](this.valueModel) != 'object') {
-            this.valueModel = [this.valueModel];
+        modelValue2insideValue: function modelValue2insideValue() {
+          var insideValueNew = [];
+          if (typeof this.modelValue == 'undefined' || this.modelValue == null || !this.modelValue) {
+            insideValueNew = [];
+          } else if (babelHelpers["typeof"](this.modelValue) == 'object') {
+            insideValueNew = JSON.parse(JSON.stringify(this.modelValue));
+          } else if (babelHelpers["typeof"](this.modelValue) != 'object') {
+            insideValueNew = [this.modelValue];
           }
+          if (JSON.stringify(this.insideValue) != JSON.stringify(insideValueNew)) this.insideValue = insideValueNew;
         },
         open: function open() {
           this.state.open = true;
@@ -148,21 +156,21 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         },
         set: function set(value) {
           if (this.multiselect) {
-            for (var i in this.valueModel) {
-              var oneVal = this.valueModel[i];
+            for (var i in this.insideValue) {
+              var oneVal = this.insideValue[i];
               if (oneVal == value) {
-                this.valueModel.splice(i, 1);
+                this.insideValue.splice(i, 1);
                 return;
               }
             }
-            this.valueModel.push(value);
+            this.insideValue.push(value);
           } else {
-            this.valueModel = [value];
+            this.insideValue = [value];
             this.close();
           }
         }
       },
-      template: /*vue-html*/"\n    <div class=\"selector\">\n        <input\n                v-if=\"name\"\n                v-bind:name=\"name\"\n                v-bind:value=\"valueModel\"\n                type=\"hidden\"\n            >\n        <div class=\"selector-display\" v-on:click=\"toggle\">{{titles.join(', ')}}</div>\n        <div class=\"selector-list\" v-if=\"state.open\">\n            <input v-if=\"view_search\" v-model=\"state.search\">\n            <span class=\"selector-unselect\" v-if=\"view_reset && option\" v-on:click=\"set('')\">\u0421\u0431\u0440\u043E\u0441\u0438\u0442\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u274C</span>\n            <ul>\n                <li\n                        v-for=\"option in orderedOptions[0]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[1]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}\"\n                        class=\"selector-list-item_others\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[2]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:(valueModel && typeof valueModel == 'object' && valueModel.includes(option.value))}\"\n                        class=\"selector-list-item_rest\"\n                    >{{option.title}}</li>\n            </ul>\n        </div>\n    </div>\n\t"
+      template: /*vue-html*/"\n    <div class=\"selector\">\n        <input\n                v-if=\"name\"\n                v-bind:name=\"name\"\n                v-bind:value=\"insideValue\"\n                type=\"hidden\"\n            >\n        <div class=\"selector-display\" v-on:click=\"toggle\">{{titles.join(', ')}}</div>\n        <div class=\"selector-list\" v-if=\"state.open\">\n            <input v-if=\"view_search\" v-model=\"state.search\">\n            <span class=\"selector-unselect\" v-if=\"view_reset && optionselected.length\" v-on:click=\"set('')\">\u0421\u0431\u0440\u043E\u0441\u0438\u0442\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u274C</span>\n            <ul>\n                <li\n                        v-for=\"option in orderedOptions[0]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:(insideValue && typeof insideValue == 'object' && insideValue.includes(option.value))}\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[1]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:(insideValue && typeof insideValue == 'object' && insideValue.includes(option.value))}\"\n                        class=\"selector-list-item_others\"\n                    >{{option.title}}</li>\n                <li\n                        v-for=\"option in orderedOptions[2]\"\n                        v-bind:key=\"'o_'+option.value\"\n                        v-on:click=\"set(option.value)\"\n                        v-bind:class=\"{active:(insideValue && typeof insideValue == 'object' && insideValue.includes(option.value))}\"\n                        class=\"selector-list-item_rest\"\n                    >{{option.title}}</li>\n            </ul>\n        </div>\n    </div>\n\t"
     };
 
     /*
