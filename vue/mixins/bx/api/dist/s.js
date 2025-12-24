@@ -42,9 +42,53 @@ this.BX.X.Vue = this.BX.X.Vue || {};
           // можно переопределить для рассширенной отладки
           apiState: {
             probe: 0,
-            queryWaitingResponse: 0
+            queryWaitingResponse: 0,
+            queries: {}
           }
         };
+      },
+      created: function created() {
+        // если есть this.$store
+        if (this.$store) {
+          // проверим есть ли в его состояиии ключ api
+          if (!this.$store.state.api) {
+            // зарегистируем естил нет
+            this.$store.registerModule('api', {
+              namespaced: true,
+              state: {
+                queries: {}
+              },
+              getters: {
+                // получает список имен точек и возращает true если есть активные запросы к ним
+                // если передан пустой массив - то возращает true если есть вообще активные запросы
+                hasQueries: function hasQueries(state) {
+                  return function (names) {
+                    //сonsole.log('getter api/hasQueries', names);
+                    if (Array.isArray(names) && names.length > 0) {
+                      for (var UUID in state.queries) {
+                        var Query = state.queries[UUID];
+                        if (names.includes(Query.name)) {
+                          return true;
+                        }
+                      }
+                      return false;
+                    } else {
+                      return Object.keys(state.queries).length > 0;
+                    }
+                  };
+                }
+              },
+              mutations: {
+                addQuery: function addQuery(state, payload) {
+                  state.queries[payload.uuid] = payload.query;
+                },
+                removeQuery: function removeQuery(state, payload) {
+                  delete state.queries[payload.uuid];
+                }
+              }
+            });
+          }
+        }
       },
       methods: {
         getPointUrl: function getPointUrl(name, data) {
@@ -98,9 +142,32 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             if (this.apiDebug) {
               console.log('x.vue.bx.api', 'API query', name, Url, data);
             }
+            var UUID = 'api-query-' + name + '-' + new Date().getTime() + '-' + Math.floor(Math.random() * 10000);
+            this.apiState.queries[UUID] = {
+              name: name,
+              url: Url,
+              data: data,
+              method: DefaultMethod,
+              timestamp: new Date().getTime()
+            };
+            // если есть this.$store
+            if (this.$store) {
+              this.$store.commit('api/addQuery', {
+                uuid: UUID,
+                query: this.apiState.queries[UUID]
+              });
+            }
             this.apiState.queryWaitingResponse++;
             method(Url, data, function (response) {
               _this.apiState.queryWaitingResponse--;
+              delete _this.apiState.queries[UUID];
+
+              // если есть this.$store
+              if (_this.$store) {
+                _this.$store.commit('api/removeQuery', {
+                  uuid: UUID
+                });
+              }
               if (_this.apiDebug) {
                 console.log('x.vue.bx.api', 'API response', name, response);
               }
