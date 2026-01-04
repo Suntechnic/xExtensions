@@ -137,11 +137,47 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             } else if (!data.sessid && (_BX = BX) !== null && _BX !== void 0 && _BX.bitrix_sessid) {
               data.sessid = BX.bitrix_sessid();
             }
+
+            /**
+             * В method помещаем функцию BX.ajax.get или BX.ajax.post
+             * им в дальнешейм будет выполнен запрос
+             * В DefaultMethod хранится строка с методом запроса 'GET' или 'POST'
+             */
             var method = BX.ajax['get'];
             if (DefaultMethod == 'POST') method = BX.ajax['post'];
             if (this.apiDebug) {
               console.log('x.vue.bx.api', 'API query', name, Url, data);
             }
+
+            /**
+             * Для метода GET возможно данные уже присуствуют в документе в виде
+             * <script type="application/json" name="name" href="Url">{...}</script>
+             */
+            if (DefaultMethod == 'GET') {
+              var _document$querySelect;
+              var Data = (_document$querySelect = document.querySelector('[name=' + name + '][href="' + Url + '"]')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.innerText;
+              if (Data) {
+                try {
+                  var response = {
+                    status: 'success',
+                    data: JSON.parse(Data)
+                  };
+                  if (this.apiDebug) {
+                    console.log('x.vue.bx.api', 'API response from document', name, response);
+                  }
+                  callback(JSON.stringify(response));
+                  return;
+                } catch (e) {
+                  if (this.apiDebug) console.error('x.vue.bx.api', 'Error parse API response from document', name, Data, e);
+                }
+              }
+            }
+
+            /**
+             * Регистрируем запрос в this.apiState.queries
+             * и в this.$store.state.api.queries если есть this.$store
+             * В качестве ключа используем UUID
+             */
             var UUID = 'api-query-' + name + '-' + new Date().getTime() + '-' + Math.floor(Math.random() * 10000);
             this.apiState.queries[UUID] = {
               name: name,
@@ -150,6 +186,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
               method: DefaultMethod,
               timestamp: new Date().getTime()
             };
+
             // если есть this.$store
             if (this.$store) {
               this.$store.commit('api/addQuery', {
@@ -157,7 +194,15 @@ this.BX.X.Vue = this.BX.X.Vue || {};
                 query: this.apiState.queries[UUID]
               });
             }
+
+            /**
+             * Увеличиваем счетчик ожидающих ответов
+             */
             this.apiState.queryWaitingResponse++;
+
+            /**
+             * Выполняем запрос
+             */
             method(Url, data, function (response) {
               _this.apiState.queryWaitingResponse--;
               delete _this.apiState.queries[UUID];

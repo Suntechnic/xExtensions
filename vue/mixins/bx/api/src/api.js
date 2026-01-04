@@ -128,13 +128,45 @@ export const MixinBxApi = {
                     data.sessid = BX.bitrix_sessid()
                 }
 
+
+                /**
+                 * В method помещаем функцию BX.ajax.get или BX.ajax.post
+                 * им в дальнешейм будет выполнен запрос
+                 * В DefaultMethod хранится строка с методом запроса 'GET' или 'POST'
+                 */
                 let method = BX.ajax['get'];
                 if (DefaultMethod == 'POST') method = BX.ajax['post'];
+
 
                 if (this.apiDebug) {
                     console.log('x.vue.bx.api','API query',name,Url,data);
                 }
 
+                /**
+                 * Для метода GET возможно данные уже присуствуют в документе в виде
+                 * <script type="application/json" name="name" href="Url">{...}</script>
+                 */
+                if (DefaultMethod == 'GET') {
+                    let Data = document.querySelector('[name='+name+'][href="'+Url+'"]')?.innerText;
+                    if (Data) {
+                        try {
+                            let response = {status: 'success', data: JSON.parse(Data)};
+                            if (this.apiDebug) {
+                                console.log('x.vue.bx.api','API response from document',name,response);
+                            }
+                            callback(JSON.stringify(response));
+                            return;
+                        } catch (e) {
+                            if (this.apiDebug) console.error('x.vue.bx.api','Error parse API response from document',name,Data,e);
+                        }
+                    }
+                }
+
+                /**
+                 * Регистрируем запрос в this.apiState.queries
+                 * и в this.$store.state.api.queries если есть this.$store
+                 * В качестве ключа используем UUID
+                 */
                 let UUID = 'api-query-'+name+'-'+(new Date()).getTime()+'-'+Math.floor(Math.random()*10000);
                 this.apiState.queries[UUID] = {
                     name: name,
@@ -143,6 +175,7 @@ export const MixinBxApi = {
                     method: DefaultMethod,
                     timestamp: (new Date()).getTime()
                 };
+
                 // если есть this.$store
                 if (this.$store) {
                     this.$store.commit('api/addQuery', {
@@ -151,7 +184,15 @@ export const MixinBxApi = {
                     });
                 }
 
+                /**
+                 * Увеличиваем счетчик ожидающих ответов
+                 */
                 this.apiState.queryWaitingResponse++;
+
+
+                /**
+                 * Выполняем запрос
+                 */
                 method(
                         Url,
                         data,
