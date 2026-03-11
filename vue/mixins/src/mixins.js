@@ -18,9 +18,35 @@ export const Grammar = {
     }
 }
 
-// миксин для поля ввода, рабоюащий с v-model
-// modelValue - входящее значение
-// valueModel - значение с которым связывается внутреннее поле
+
+export const Model = {
+    props: {
+        modelValue: {
+        type: [String, Number, Array, null],
+        default: null
+        }
+    },
+    emits: ['update:modelValue'],
+    computed: {
+        model: {
+            get() {
+                return this.modelValue
+            },
+            set(value) {
+                this.$emit('update:modelValue', value)
+            }
+        }
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * @deprecated Используй modelMixin с computed:model (modelValue + update:modelValue)
+ * Пример:
+ *  import { Model } from './modelMixin'
+ *  export default { mixins: [modelMixin], ... }
+ */
 export const Input = {
     props: {
         modelValue: {
