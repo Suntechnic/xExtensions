@@ -16,7 +16,8 @@ api: {
             methods: [
                 "GET",
                 "HEAD"
-            ]
+            ],
+            csrf: false // если true, то к запросу будет добавлен sessid, если он есть в BX.bitrix_sessid()
         },
     }
 },
@@ -166,12 +167,12 @@ export const MixinBxApi = {
                  */
                 let UUID = 'api-query-'+name+'-'+(new Date()).getTime()+'-'+Math.floor(Math.random()*10000);
                 this.apiState.queries[UUID] = {
-                    name: name,
-                    url: Url,
-                    data: data,
-                    method: DefaultMethod,
-                    timestamp: (new Date()).getTime()
-                };
+                        name: name,
+                        url: Url,
+                        data: data,
+                        method: DefaultMethod,
+                        timestamp: (new Date()).getTime()
+                    };
 
                 // если есть this.$store
                 if (this.$store) {
@@ -206,13 +207,24 @@ export const MixinBxApi = {
                         }
                         callback(response);
                     };
-                BX.ajax({
-                        url: Url,
-                        method: DefaultMethod,
-                        data: data,
-                        onsuccess: handler,
-                        onfailure: handler
-                    });
+
+                if (DefaultMethod == 'GET') {
+                    BX.ajax.get(
+                            Url,
+                            data,
+                            handler
+                        );
+                } else {
+                    BX.ajax({
+                            url: Url,
+                            method: DefaultMethod,
+                            data: data,
+                            onsuccess: handler,
+                            onfailure: handler
+                        });
+                }
+
+                
             } else {
                 let reCall = ()=>{
                         this.queryPoint(name, data, callback);
