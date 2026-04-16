@@ -141,10 +141,9 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             /**
              * В method помещаем функцию BX.ajax.get или BX.ajax.post
              * им в дальнешейм будет выполнен запрос
-             * В DefaultMethod хранится строка с методом запроса 'GET' или 'POST'
+             * В DefaultMethod хранится строка с методом запроса 'GET', 'POST'
              */
-            var method = BX.ajax['get'];
-            if (DefaultMethod == 'POST') method = BX.ajax['post'];
+
             if (this.apiDebug) {
               console.log('x.vue.bx.api', 'API query', name, Url, data);
             }
@@ -203,7 +202,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             /**
              * Выполняем запрос
              */
-            method(Url, data, function (response) {
+            var handler = function handler(response) {
               _this.apiState.queryWaitingResponse--;
               delete _this.apiState.queries[UUID];
 
@@ -217,6 +216,13 @@ this.BX.X.Vue = this.BX.X.Vue || {};
                 console.log('x.vue.bx.api', 'API response', name, response);
               }
               callback(response);
+            };
+            BX.ajax({
+              url: Url,
+              method: DefaultMethod,
+              data: data,
+              onsuccess: handler,
+              onfailure: handler
             });
           } else {
             var reCall = function reCall() {
