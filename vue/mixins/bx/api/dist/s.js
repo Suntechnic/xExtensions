@@ -23,7 +23,8 @@ this.BX.X.Vue = this.BX.X.Vue || {};
                 methods: [
                     "GET",
                     "HEAD"
-                ]
+                ],
+                csrf: false // если true, то к запросу будет добавлен sessid, если он есть в BX.bitrix_sessid()
             },
         }
     },
@@ -217,13 +218,17 @@ this.BX.X.Vue = this.BX.X.Vue || {};
               }
               callback(response);
             };
-            BX.ajax({
-              url: Url,
-              method: DefaultMethod,
-              data: data,
-              onsuccess: handler,
-              onfailure: handler
-            });
+            if (DefaultMethod == 'GET') {
+              BX.ajax.get(Url, data, handler);
+            } else {
+              BX.ajax({
+                url: Url,
+                method: DefaultMethod,
+                data: data,
+                onsuccess: handler,
+                onfailure: handler
+              });
+            }
           } else {
             var reCall = function reCall() {
               _this.queryPoint(name, data, callback);
