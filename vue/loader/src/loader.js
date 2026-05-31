@@ -85,12 +85,11 @@ export const loader = {
                 
                 // если компонент нашли
                 if (component) {
-                    let datasetAttrs = '';
+                    let props = {};
                     for (let name in elm.dataset) {
-                        datasetAttrs = datasetAttrs+' '+name+'="'+elm.dataset[name]+'"';
+                        props[name] = elm.dataset[name];
                     }
-
-                    let template = '<'+ComponentName+datasetAttrs+'>';
+                    let template = '<'+ComponentName+'>';
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     // поддержка слотов
                     let slotElms = elm.querySelectorAll('[vue-slot]');
@@ -113,7 +112,7 @@ export const loader = {
                             name: AppName,
                             components: components,
                             template: template
-                        });
+                        },props);
 
                     if (loader.store) application.use(loader.store);
                     
@@ -121,7 +120,12 @@ export const loader = {
                     // поддержка инъекций
 
                     // предоставляем данные json
-                    let jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
+                    let jsonElms = [];
+                    try {
+                        jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
+                    } catch (e) {
+                        console.error('Error in json data', e);
+                    }
                     jsonElms.forEach((jsonElm)=>{
                             application.provide(jsonElm.getAttribute('name'),JSON.parse(jsonElm.innerText));
                         });

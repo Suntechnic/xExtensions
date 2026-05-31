@@ -80,11 +80,11 @@ this.BX.X = this.BX.X || {};
 
           // если компонент нашли
           if (component) {
-            var datasetAttrs = '';
+            var props = {};
             for (var name in elm.dataset) {
-              datasetAttrs = datasetAttrs + ' ' + name + '="' + elm.dataset[name] + '"';
+              props[name] = elm.dataset[name];
             }
-            var template = '<' + ComponentName + datasetAttrs + '>';
+            var template = '<' + ComponentName + '>';
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // поддержка слотов
             var slotElms = elm.querySelectorAll('[vue-slot]');
@@ -105,14 +105,19 @@ this.BX.X = this.BX.X || {};
               name: AppName,
               components: components,
               template: template
-            });
+            }, props);
             if (loader.store) application.use(loader.store);
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // поддержка инъекций
 
             // предоставляем данные json
-            var jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
+            var jsonElms = [];
+            try {
+              jsonElms = elm.querySelectorAll('[type="extension/settings"][name]');
+            } catch (e) {
+              console.error('Error in json data', e);
+            }
             jsonElms.forEach(function (jsonElm) {
               application.provide(jsonElm.getAttribute('name'), JSON.parse(jsonElm.innerText));
             });
