@@ -82,7 +82,26 @@ this.BX.X = this.BX.X || {};
           if (component) {
             var props = {};
             for (var name in elm.dataset) {
-              props[name] = elm.dataset[name];
+              var value = elm.dataset[name];
+
+              // смотрим какой тип данных должен получить компонент
+              if (component.props && component.props[name] && babelHelpers["typeof"](component.props[name]) == 'object' && component.props[name].type) {
+                var type = component.props[name].type;
+                if (type == Boolean) {
+                  value = value == 'true';
+                } else if (type == Number) {
+                  value = parseFloat(value);
+                } else if (type == Object || type == Array) {
+                  try {
+                    // декодируем из base64
+                    var Json = atob(value);
+                    value = JSON.parse(Json);
+                  } catch (e) {
+                    console.error('Error parsing prop', name, 'with value', value, 'to type', type, e);
+                  }
+                }
+              }
+              props[name] = value;
             }
             var template = '<' + ComponentName + '>';
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

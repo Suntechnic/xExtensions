@@ -86,9 +86,31 @@ export const loader = {
                 // если компонент нашли
                 if (component) {
                     let props = {};
+                    
                     for (let name in elm.dataset) {
-                        props[name] = elm.dataset[name];
+                        let value = elm.dataset[name];
+
+                        // смотрим какой тип данных должен получить компонент
+                        if (component.props && component.props[name] && typeof component.props[name] == 'object' && component.props[name].type) {
+                            let type = component.props[name].type;
+                            if (type == Boolean) {
+                                value = value == 'true';
+                            } else if (type == Number) {
+                                value = parseFloat(value);
+                            } else if (type == Object || type == Array) {
+                                try {
+                                    // декодируем из base64
+                                    let Json = atob(value);
+                                    value = JSON.parse(Json);
+                                } catch (e) {
+                                    console.error('Error parsing prop', name, 'with value', value, 'to type', type, e);
+                                }
+                            }
+                        }
+
+                        props[name] = value;
                     }
+                    
                     let template = '<'+ComponentName+'>';
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     // поддержка слотов
