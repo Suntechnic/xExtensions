@@ -1,0 +1,8 @@
+summary.x-dev-title {
+    cursor: pointer;
+}
+
+.x-dev-value {
+    max-width: 100%;
+    word-wrap: anywhere;
+}
