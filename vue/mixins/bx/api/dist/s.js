@@ -36,7 +36,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             });
      */
 
-    var MixinBxApi = {
+    var BxApi = {
       data: function data() {
         return {
           apiDebug: false,
@@ -47,49 +47,6 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             queries: {}
           }
         };
-      },
-      created: function created() {
-        // если есть this.$store
-        if (this.$store) {
-          // проверим есть ли в его состояиии ключ api
-          if (!this.$store.state.api) {
-            // зарегистируем естил нет
-            this.$store.registerModule('api', {
-              namespaced: true,
-              state: {
-                queries: {}
-              },
-              getters: {
-                // получает список имен точек и возращает true если есть активные запросы к ним
-                // если передан пустой массив - то возращает true если есть вообще активные запросы
-                hasQueries: function hasQueries(state) {
-                  return function (names) {
-                    //сonsole.log('getter api/hasQueries', names);
-                    if (Array.isArray(names) && names.length > 0) {
-                      for (var UUID in state.queries) {
-                        var Query = state.queries[UUID];
-                        if (names.includes(Query.name)) {
-                          return true;
-                        }
-                      }
-                      return false;
-                    } else {
-                      return Object.keys(state.queries).length > 0;
-                    }
-                  };
-                }
-              },
-              mutations: {
-                addQuery: function addQuery(state, payload) {
-                  state.queries[payload.uuid] = payload.query;
-                },
-                removeQuery: function removeQuery(state, payload) {
-                  delete state.queries[payload.uuid];
-                }
-              }
-            });
-          }
-        }
       },
       methods: {
         getPointUrl: function getPointUrl(name, data) {
@@ -173,11 +130,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
               }
             }
 
-            /**
-             * Регистрируем запрос в this.apiState.queries
-             * и в this.$store.state.api.queries если есть this.$store
-             * В качестве ключа используем UUID
-             */
+            // Регистрируем запрос локально. В качестве ключа используем UUID.
             var UUID = 'api-query-' + name + '-' + new Date().getTime() + '-' + Math.floor(Math.random() * 10000);
             this.apiState.queries[UUID] = {
               name: name,
@@ -186,14 +139,6 @@ this.BX.X.Vue = this.BX.X.Vue || {};
               method: DefaultMethod,
               timestamp: new Date().getTime()
             };
-
-            // если есть this.$store
-            if (this.$store) {
-              this.$store.commit('api/addQuery', {
-                uuid: UUID,
-                query: this.apiState.queries[UUID]
-              });
-            }
 
             /**
              * Увеличиваем счетчик ожидающих ответов
@@ -206,13 +151,6 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             var handler = function handler(response) {
               _this.apiState.queryWaitingResponse--;
               delete _this.apiState.queries[UUID];
-
-              // если есть this.$store
-              if (_this.$store) {
-                _this.$store.commit('api/removeQuery', {
-                  uuid: UUID
-                });
-              }
               if (_this.apiDebug) {
                 console.log('x.vue.bx.api', 'API response', name, response);
               }
@@ -251,7 +189,223 @@ this.BX.X.Vue = this.BX.X.Vue || {};
         }
       }
     };
+    var MixinBxApi = {
+      data: function data() {
+        return {
+          apiDebug: false,
+          // можно переопределить для рассширенной отладки
+          apiState: {
+            probe: 0,
+            queryWaitingResponse: 0,
+            queries: {}
+          }
+        };
+      },
+      created: function created() {
+        // если есть this.$store
+        if (this.$store) {
+          // проверим есть ли в его состояиии ключ api
+          if (!this.$store.state.api) {
+            // зарегистируем естил нет
+            this.$store.registerModule('api', {
+              namespaced: true,
+              state: {
+                queries: {}
+              },
+              getters: {
+                // получает список имен точек и возращает true если есть активные запросы к ним
+                // если передан пустой массив - то возращает true если есть вообще активные запросы
+                hasQueries: function hasQueries(state) {
+                  return function (names) {
+                    //сonsole.log('getter api/hasQueries', names);
+                    if (Array.isArray(names) && names.length > 0) {
+                      for (var UUID in state.queries) {
+                        var Query = state.queries[UUID];
+                        if (names.includes(Query.name)) {
+                          return true;
+                        }
+                      }
+                      return false;
+                    } else {
+                      return Object.keys(state.queries).length > 0;
+                    }
+                  };
+                }
+              },
+              mutations: {
+                addQuery: function addQuery(state, payload) {
+                  state.queries[payload.uuid] = payload.query;
+                },
+                removeQuery: function removeQuery(state, payload) {
+                  delete state.queries[payload.uuid];
+                }
+              }
+            });
+          }
+        }
+      },
+      methods: {
+        getPointUrl: function getPointUrl(name, data) {
+          var _this$api4;
+          if ((_this$api4 = this.api) !== null && _this$api4 !== void 0 && _this$api4.points) {
+            var EndPoint = this.api.points[name];
+            if (EndPoint !== null && EndPoint !== void 0 && EndPoint.uri) {
+              var Url = EndPoint.uri;
+              if (data && babelHelpers["typeof"](data) == 'object') {
+                for (var Key in data) {
+                  var Val = data[Key];
+                  var Placer = '{' + Key + '}';
+                  Url = Url.replace(Placer, Val);
+                }
+              }
+              return Url;
+            }
+            console.error('x.vue.bx.api', 'Invalid endpoint: ' + name, EndPoint);
+          } else {
+            console.error('x.vue.bx.api', 'API is not available');
+          }
+        },
+        queryPoint: function queryPoint(name, data, callback) {
+          var _this$api5,
+            _this$api6,
+            _this2 = this;
+          if ((_this$api5 = this.api) !== null && _this$api5 !== void 0 && _this$api5.version && (_this$api6 = this.api) !== null && _this$api6 !== void 0 && _this$api6.points) {
+            var _BX2;
+            // если есть версия (нет версии - значит api не загружен) и точки
+            data = data || {};
+            var EndPoint = this.api.points[name];
+            if (!EndPoint) {
+              console.error('x.vue.bx.api', 'Invalid endpoint: ' + name, this.api.points);
+              return;
+            }
+            var DefaultMethod = EndPoint.methods[0] || 'GET';
+            var Url = this.getPointUrl(name, data);
+            if (this.api.host) {
+              // для стаороннего хоста сессию не используем
+              Url = this.api.host + Url;
+              if (this.api.protocol) {
+                Url = this.api.protocol + '://' + Url;
+              } else {
+                Url = 'https://' + Url;
+              }
+            } else if (!data.sessid && (_BX2 = BX) !== null && _BX2 !== void 0 && _BX2.bitrix_sessid) {
+              data.sessid = BX.bitrix_sessid();
+            }
 
+            /**
+             * В method помещаем функцию BX.ajax.get или BX.ajax.post
+             * им в дальнешейм будет выполнен запрос
+             * В DefaultMethod хранится строка с методом запроса 'GET', 'POST'
+             */
+
+            if (this.apiDebug) {
+              console.log('x.vue.bx.api', 'API query', name, Url, data);
+            }
+
+            /**
+             * Для метода GET возможно данные уже присуствуют в документе в виде
+             * <script type="application/json" name="name" href="Url">{...}</script>
+             */
+            if (DefaultMethod == 'GET') {
+              var _document$querySelect2;
+              var Data = (_document$querySelect2 = document.querySelector('[name=' + name + '][href="' + Url + '"]')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.innerText;
+              if (Data) {
+                try {
+                  var response = {
+                    status: 'success',
+                    data: JSON.parse(Data)
+                  };
+                  if (this.apiDebug) {
+                    console.log('x.vue.bx.api', 'API response from document', name, response);
+                  }
+                  callback(JSON.stringify(response));
+                  return;
+                } catch (e) {
+                  if (this.apiDebug) console.error('x.vue.bx.api', 'Error parse API response from document', name, Data, e);
+                }
+              }
+            }
+
+            /**
+             * Регистрируем запрос в this.apiState.queries
+             * и в this.$store.state.api.queries если есть this.$store
+             * В качестве ключа используем UUID
+             */
+            var UUID = 'api-query-' + name + '-' + new Date().getTime() + '-' + Math.floor(Math.random() * 10000);
+            this.apiState.queries[UUID] = {
+              name: name,
+              url: Url,
+              data: data,
+              method: DefaultMethod,
+              timestamp: new Date().getTime()
+            };
+
+            // если есть this.$store
+            if (this.$store) {
+              this.$store.commit('api/addQuery', {
+                uuid: UUID,
+                query: this.apiState.queries[UUID]
+              });
+            }
+
+            /**
+             * Увеличиваем счетчик ожидающих ответов
+             */
+            this.apiState.queryWaitingResponse++;
+
+            /**
+             * Выполняем запрос
+             */
+            var handler = function handler(response) {
+              _this2.apiState.queryWaitingResponse--;
+              delete _this2.apiState.queries[UUID];
+
+              // если есть this.$store
+              if (_this2.$store) {
+                _this2.$store.commit('api/removeQuery', {
+                  uuid: UUID
+                });
+              }
+              if (_this2.apiDebug) {
+                console.log('x.vue.bx.api', 'API response', name, response);
+              }
+              callback(response);
+            };
+            if (DefaultMethod == 'GET') {
+              BX.ajax.get(Url, data, handler);
+            } else {
+              BX.ajax({
+                url: Url,
+                method: DefaultMethod,
+                data: data,
+                onsuccess: handler,
+                onfailure: handler
+              });
+            }
+          } else {
+            var reCall = function reCall() {
+              _this2.queryPoint(name, data, callback);
+            };
+            if (this.apiState.probe) {
+              if (this.apiState.probe == 16) {
+                console.warn('x.vue.bx.api', 'Very long waiting for the API to be ready');
+              }
+              if (this.apiState.probe > 128) {
+                console.error('x.vue.bx.api', 'Very long waiting for the API to be ready. The API has been stopped!');
+                return;
+              }
+              setTimeout(reCall, 100 * this.apiState.probe);
+              this.apiState.probe++;
+            } else {
+              this.apiState.probe = 1;
+              this.$nextTick(reCall);
+            }
+          }
+        }
+      }
+    };
+
+    exports.BxApi = BxApi;
     exports.MixinBxApi = MixinBxApi;
 
 }((this.BX.X.Vue.Mixins = this.BX.X.Vue.Mixins || {})));
