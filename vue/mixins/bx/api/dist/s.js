@@ -77,6 +77,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
             var _BX;
             // если есть версия (нет версии - значит api не загружен) и точки
             data = data || {};
+            var isFormData = typeof FormData != 'undefined' && data instanceof FormData;
             var EndPoint = this.api.points[name];
             if (!EndPoint) {
               console.error('x.vue.bx.api', 'Invalid endpoint: ' + name, this.api.points);
@@ -92,8 +93,12 @@ this.BX.X.Vue = this.BX.X.Vue || {};
               } else {
                 Url = 'https://' + Url;
               }
-            } else if (!data.sessid && (_BX = BX) !== null && _BX !== void 0 && _BX.bitrix_sessid) {
-              data.sessid = BX.bitrix_sessid();
+            } else if ((_BX = BX) !== null && _BX !== void 0 && _BX.bitrix_sessid && (isFormData ? !data.has('sessid') : !data.sessid)) {
+              if (isFormData) {
+                data.append('sessid', BX.bitrix_sessid());
+              } else {
+                data.sessid = BX.bitrix_sessid();
+              }
             }
 
             /**
@@ -163,6 +168,7 @@ this.BX.X.Vue = this.BX.X.Vue || {};
                 url: Url,
                 method: DefaultMethod,
                 data: data,
+                preparePost: !isFormData,
                 onsuccess: handler,
                 onfailure: handler
               });

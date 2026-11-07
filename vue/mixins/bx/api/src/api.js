@@ -66,6 +66,7 @@ export const BxApi = {
         queryPoint (name, data, callback) {
             if (this.api?.version && this.api?.points) { // если есть версия (нет версии - значит api не загружен) и точки
                 data = data || {};
+                let isFormData = typeof FormData != 'undefined' && data instanceof FormData;
                 let EndPoint = this.api.points[name];
 
                 if (!EndPoint) {
@@ -83,8 +84,12 @@ export const BxApi = {
                     } else {
                         Url = 'https://'+Url;
                     }
-                } else if (!data.sessid && BX?.bitrix_sessid) {
-                    data.sessid = BX.bitrix_sessid()
+                } else if (BX?.bitrix_sessid && (isFormData ? !data.has('sessid') : !data.sessid)) {
+                    if (isFormData) {
+                        data.append('sessid', BX.bitrix_sessid());
+                    } else {
+                        data.sessid = BX.bitrix_sessid();
+                    }
                 }
 
 
@@ -158,6 +163,7 @@ export const BxApi = {
                             url: Url,
                             method: DefaultMethod,
                             data: data,
+                            preparePost: !isFormData,
                             onsuccess: handler,
                             onfailure: handler
                         });
